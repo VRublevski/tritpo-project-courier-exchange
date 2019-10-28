@@ -31,7 +31,7 @@
 
 ### 1. Диаграмма вариантов использования 
 Диаграмма вариантов использования представляет собой следующую диаграмму:
-![alt text](https://github.com/EfimSirotkin/SchoolStaffManager/blob/master/Diagrams/UseCaseDiagram/UseCaseDiagram.png)
+![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Diagrams/Use-Cases/use-cases.jpg)
 
 <a name="1.1"/>
 
