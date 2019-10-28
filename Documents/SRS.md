@@ -107,18 +107,18 @@
 ### 4.1 Интерфейс пользователя<a name="4.1"></a> 
    Стартовая страница веб-приложения. На этой странице пользователь сможет получить краткое описание функциональности приложения. 
    
- ![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Home%20Page.png)  
+ ![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Mockups/Home%20Page.png)  
  
    Страница "Личный кабинет". На данной странице пользователь(курьер, заказчик). Может редактировать информацию о себе. 
    Также на этой странице предоставляется информация о заказах. Курьер сможет наблюдать заказы, которые ему предстоит выполнить.
    Для заказчика отображается информация о ещё не завершённых доставках. 
    
- ![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Cabinet.png)
+ ![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Mockups/Cabinet.png)
    
   
    Страница со списком курьеров. На этой странице пользователь сможет видеть курьеров с их кратким описанием.
    
- ![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Currier%20List.png)  
+ ![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Mockups/Currier%20List.png)  
 ## 5. Другие нефункциональные требования<a name="5"></a>
 ### 5.1 Атрибуты качечтва<a name="5.1"></a> 
    1. Доступность.  
