@@ -27,6 +27,15 @@
 3.4 [Запрос на изменение личных данных](#3.4)<br>
 3.5 [Получение подробной информации о курьере](#3.5)<br>
 
+4. [Диаграммы состояния](#4)<br>
+4.1 [Клиент](#4.1)<br>
+4.2 [Курьер](#4.2)<br>
+4.3 [Доставка](#4.3)<br>
+
+5. [Диаграммы классов](#5)<br>
+
+6. [Совмещённая диаграмма компонентов и развёртывания](#6)<br>
+
 <a name="1"/>
 
 ### 1. Диаграмма вариантов использования 
@@ -262,3 +271,33 @@
 #### 3.5 Получение подробной информации о курьере
 
 ![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Diagrams/Sequance/descriptive-information.jpg)
+
+<a name="4"/>
+
+### 4. Диаграммы состояния<a name="4"></a>
+
+<a name="4.1"/>
+
+#### 4.1 Клиент<a name="4.1"></a>
+![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Diagrams/State/client.jpg)
+
+<a name="4.2"/>
+
+#### 4.2 Курьер<a name="4.2"></a>
+![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Diagrams/State/courier.jpg)
+
+<a name="4.3"/>
+
+#### 4.3 Доставка<a name="4.3"></a>
+
+![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Diagrams/State/delivery.jpg)
+
+<a name="5"/>
+
+### 5. Диаграмма классов<a name="5"></a>
+![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Diagrams/Class/exchange.jpg)
+
+<a name="6"/>
+
+### 6. Совмещенная диаграмма компонентов и развертывания <a name="6"></a>
+![alt text](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Images/Diagrams/Deployment/exchange.jpg)
