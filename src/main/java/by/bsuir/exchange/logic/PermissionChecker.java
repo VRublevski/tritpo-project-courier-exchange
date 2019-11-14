@@ -49,7 +49,15 @@ public class PermissionChecker {
     private static void addGuestCompetencies(){
         int i = RoleEnum.GUEST.ordinal();
         EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(CREATE, UPDATE);
-        instance.roleCompetencies[i][RoleEnum.GUEST.ordinal()] = new Permission(sessionPermissions);
+        EnumSet<PermissionEnum> userPermissions = EnumSet.of(CREATE, UPDATE);
+        instance.roleCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(sessionPermissions);
+        instance.roleCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(userPermissions);
+    }
+
+    private static void addRegisterCommandCompetencies() {
+        int i = CommandEnum.REGISTER.ordinal();
+        EnumSet<PermissionEnum> userPermissions = EnumSet.of(CREATE, UPDATE);
+        instance.commandCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(userPermissions);
     }
 
     public static PermissionChecker getInstance(){
@@ -59,7 +67,9 @@ public class PermissionChecker {
             instance.roleCompetencies = new Permission[N_COMMANDS][N_RESOURCES];
 
             addLoginCommandCompetencies();
+            addRegisterCommandCompetencies();
             addGuestCompetencies();
+
         }
 
         return instance;

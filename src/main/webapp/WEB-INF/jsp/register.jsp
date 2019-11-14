@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <fmt:setLocale value="$sessionScope.locale"/>
 <fmt:setBundle basename="register" var="rb" />
 <html lang="$sessionScope.locale">
@@ -28,8 +28,10 @@
             <input type="hidden" name="command" value="register" />
             <input type="text" name="email" value="" placeholder="<fmt:message key="form.email" bundle="${rb}" />" maxlength="16" required autofocus/><br/>
             <input type="text" name="name" value="" placeholder="<fmt:message key="form.name" bundle="${rb}" />" maxlength="16" required/><br/>
-            <input type="password" name="password" value="" placeholder="<fmt:message key="form.password-repeat" bundle="${rb}" />" maxlength="16" required/><br/>
-            <input type="password" name="password-repeat" value="" placeholder="<fmt:message key="form.password" bundle="${rb}" />" maxlength="16" required/><br/>
+            <input type="password" name="password" value="" placeholder="<fmt:message key="form.password" bundle="${rb}" />" maxlength="16" required/><br/>
+            Choose your role:<br/>
+            <input type ="radio" name="role" value="client" checked="checked"/> Client
+            <input type= "radio" name="role" value ="courier"/> Courier
             <button id="register-button" name="submit" type="submit">
                 <fmt:message key="button.register" bundle="${rb}"/>
             </button>

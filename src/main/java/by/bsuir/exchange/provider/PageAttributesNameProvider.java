@@ -10,14 +10,14 @@ public class PageAttributesNameProvider {
     private static final Map<String, String> loginPage = new HashMap<>();
 
     public static final String LOGIN_PAGE = "LOGIN_PAGE";
-    public static final String CREDENTIAL_ATTRIBUTE = "CREDENTIAL_ATTRIBUTE";
+    public static final String USER_ATTRIBUTE = "CREDENTIAL_ATTRIBUTE";
 
     public static final String GLOBAL_PAGE = "GLOBAL_PAGE";
     public static final String LANG = "LANG";
 
     static {
         globalPage.put(LANG, "lang");
-        loginPage.put(CREDENTIAL_ATTRIBUTE, "credential");
+        loginPage.put(USER_ATTRIBUTE, "user");
     }
 
     public static String getProperty(String page, String attribute){

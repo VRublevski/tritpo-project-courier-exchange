@@ -1,6 +1,5 @@
 package by.bsuir.exchange.manager;
 
-import by.bsuir.exchange.bean.CredentialBean;
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
@@ -46,20 +45,20 @@ public class HttpSessionManager implements CommandHandler {
         locales.put("en", "en_EN");
     }
 
-    public boolean login(HttpServletRequest request, CredentialBean credential) throws ManagerOperationException {
-        String email = credential.getEmail();
-        String password = credential.getPassword();
-        Specification userLoginSpecification = new UserByEmailSqlSpecification(email);
+    public boolean login(HttpServletRequest request, UserBean userRequest) throws ManagerOperationException {
+        Specification userLoginSpecification = new UserByEmailSqlSpecification(userRequest);
         try{
             Optional<UserBean> userOption = repository.find(userLoginSpecification);
             if (!userOption.isPresent()){
                 return false;
             }
-            UserBean user = userOption.get();
-            if (user.getPassword().equals(password)){
+            UserBean userFound = userOption.get();
+            String actualPassword = userRequest.getPassword();
+            String expectedPassword = userFound.getPassword();
+            if (actualPassword.equals(expectedPassword)){
                 HttpSession session = request.getSession();
                 String roleAttribute = SessionAttributesNameProvider.getProperty(SessionAttributesNameProvider.ROLE);
-                session.setAttribute(roleAttribute, user.getRole());
+                session.setAttribute(roleAttribute, userFound.getRole());
                 return true;
             }else{
                 return false;
@@ -67,6 +66,17 @@ public class HttpSessionManager implements CommandHandler {
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }
+    }
+
+    public boolean register(HttpServletRequest request, UserBean user) throws ManagerOperationException {
+        try {
+            repository.add(user);
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
+        }
+        HttpSession session = request.getSession();
+        session.setAttribute("role", user.getRole());
+        return true;
     }
 
     public boolean changeLocale(HttpServletRequest request){
@@ -82,8 +92,13 @@ public class HttpSessionManager implements CommandHandler {
         boolean status;
         switch (command){
             case LOGIN: {
-                CredentialBean credential = (CredentialBean) request.getAttribute("credential");
-                status = login(request, credential);
+                UserBean user = (UserBean) request.getAttribute("user");
+                status = login(request, user);
+                break;
+            }
+            case REGISTER: {
+                UserBean user = (UserBean) request.getAttribute("user");
+                status = register(request, user);
                 break;
             }
             case SET_LOCALE:{

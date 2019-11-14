@@ -1,5 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<fmt:setLocale value="${sessionScope.lang}"/>
+<fmt:setBundle basename="login" var="rb" />
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -12,14 +15,16 @@
 <body>
     <div id="wrapper">
         <header>
-            <a href="/"><img src="<c:url value="/images/logo.png"/>" alt="Logo"></a>
+            <a href=""><img src="<c:url value="/images/logo.png"/>" alt="Logo"></a>
         </header>
         <nav>
             <ul class="top-menu">
                 <li><a href="<c:url value="/home"/>">HOME</a></li>
                 <li><a href="<c:url value="/cabinet"/>">CABINET</a></li>
                 <li><a href="<c:url value="/couriers"/>">COURIERS</a></li>
+                <li><a href="<c:url value="/controller?command=set_locale&lang=ru"/>">ru</a></li>
             </ul>
+
         </nav>
         <div id="heading">
             <h1>HOME</h1>
@@ -36,7 +41,7 @@
     <footer class="footer">
         <div id="footer">
             <div id="footer-logo">
-                <a href="/"><img src="<c:url value="/images/logo.png"/>" alt="Whitesquare logo"></a>
+                <a href=""><img src="<c:url value="/images/logo.png"/>" alt="Whitesquare logo"></a>
                 <p>Copyright © 2012 Whitesquare. A <a href="http://pcklab.com">pcklab</a> creation</p>
             </div>
         </div>

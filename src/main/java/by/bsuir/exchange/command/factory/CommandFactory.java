@@ -13,12 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static by.bsuir.exchange.provider.ConfigurationProvider.HOME_PAGE_PATH;
-import static by.bsuir.exchange.provider.ConfigurationProvider.LOGIN_PAGE_PATH;
+import static by.bsuir.exchange.provider.ConfigurationProvider.*;
 
 public class CommandFactory {
     private static final String COMMAND = "command";
-    private static final int N_COMMANDS = 2;
+    private static final int N_COMMANDS = 4;
 
     private static Map<String, String> pageConstants;
 
@@ -37,6 +36,9 @@ public class CommandFactory {
 
         successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(HOME_PAGE_PATH);
         failurePages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(LOGIN_PAGE_PATH);
+
+        successPages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(HOME_PAGE_PATH);
+        failurePages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(REGISTER_PAGE_PATH);
     }
 
     public static Command getCommand(HttpServletRequest request) throws CommandInitializationException {

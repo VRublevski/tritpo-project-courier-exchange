@@ -1,6 +1,6 @@
 package by.bsuir.exchange.chain;
 
-import by.bsuir.exchange.bean.CredentialBean;
+import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.logic.PermissionChecker;
@@ -8,11 +8,9 @@ import by.bsuir.exchange.manager.HttpSessionManager;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
-import by.bsuir.exchange.validator.CredentialValidator;
-import org.apache.commons.beanutils.BeanUtils;
+import by.bsuir.exchange.validator.UserValidator;
 
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.InvocationTargetException;
 
 public class ChainFactory { //Load on servlet initialization
     /*Chains*/
@@ -20,7 +18,7 @@ public class ChainFactory { //Load on servlet initialization
     private static CommandHandler emptyChain;
 
     /*Bean creators*/
-    private static CommandHandler credentialBeanCreator;
+    private static CommandHandler userBeanCreator;
 
     /*Validators*/
     private static CommandHandler credentialValidator;
@@ -37,7 +35,8 @@ public class ChainFactory { //Load on servlet initialization
     public static CommandHandler getChain(CommandEnum command) throws ManagerInitializationException {
         CommandHandler chain;
         switch (command){
-            case LOGIN: {
+            case LOGIN:
+            case REGISTER: {
                 if (sessionChain == null){
                     createSessionChain();
                 }
@@ -58,18 +57,17 @@ public class ChainFactory { //Load on servlet initialization
     }
 
     private static void initBeanCreators(){
-        credentialBeanCreator = (request, command) -> {
-            CredentialBean bean = new CredentialBean();
+        userBeanCreator = (request, command) -> {
             String page = PageAttributesNameProvider.LOGIN_PAGE;
-            String attributeProperty = PageAttributesNameProvider.CREDENTIAL_ATTRIBUTE;
+            String attributeProperty = PageAttributesNameProvider.USER_ATTRIBUTE;
             String attribute = PageAttributesNameProvider.getProperty(page, attributeProperty);
-            try {
-                BeanUtils.populate(bean, request.getParameterMap());
-                request.setAttribute(attribute, bean);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();        //FIXME should be logged
-                return false;
-            }
+            String email = request.getParameter("email");
+            String name = request.getParameter("name");
+            String password = request.getParameter("password");
+            String roleString = request.getParameter("role");
+            RoleEnum role = RoleEnum.valueOf(roleString.toUpperCase());
+            UserBean bean = new UserBean(name, email, password, role);
+            request.setAttribute(attribute, bean);
             return true;
         };
     }
@@ -77,10 +75,10 @@ public class ChainFactory { //Load on servlet initialization
     private static void initValidators(){
         credentialValidator = (request, command) -> {
             String page = PageAttributesNameProvider.LOGIN_PAGE;
-            String attributeProperty = PageAttributesNameProvider.CREDENTIAL_ATTRIBUTE;
+            String attributeProperty = PageAttributesNameProvider.USER_ATTRIBUTE;
             String attribute = PageAttributesNameProvider.getProperty(page, attributeProperty);
-            CredentialBean bean = (CredentialBean) request.getAttribute(attribute);
-            return CredentialValidator.validate(bean);
+            UserBean bean = (UserBean) request.getAttribute(attribute);
+            return UserValidator.validate(bean);
         };
     }
 
@@ -100,6 +98,6 @@ public class ChainFactory { //Load on servlet initialization
 
     private static void createSessionChain() throws ManagerInitializationException {
         HttpSessionManager manager = HttpSessionManager.getInstance();
-        sessionChain = credentialBeanCreator.chain(credentialValidator).chain(permissionChecker).chain(manager);
+        sessionChain = userBeanCreator.chain(credentialValidator).chain(permissionChecker).chain(manager);
     }
 }

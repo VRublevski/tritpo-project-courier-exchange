@@ -17,6 +17,7 @@ public class DataBaseAttributesProvider {
     public static final String EMAIL = "EMAIL";
     public static final String PASSWORD = "PASSWORD";
     public static final String ROLE = "ROLE";
+    public static final String NAME = "NAME";
 
     static {
         usersColumns.put(EMAIL, "email");
