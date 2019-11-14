@@ -5,15 +5,25 @@ import by.bsuir.exchange.bean.CredentialBean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CredentialValidator {
+public class CredentialValidator{
     private static final String EMAIL_PATTERN = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}" +
                                                 "\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
 
     private static final String NAME_PATTERN = "^[A-Za-z]+$";
-    private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$";
+    private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=\\S+$).{6,16}$";
 
     public static boolean validate(CredentialBean credential){
-        return validateEmail(credential) && validateName(credential) && validatePassword(credential);
+        boolean isValid = true;
+        if (credential.getEmail() != null){
+            isValid &= validateEmail(credential);
+        }
+        if (credential.getPassword() != null){
+            isValid &= validatePassword(credential);
+        }
+        if (credential.getName() != null){
+            isValid &= validateName(credential);
+        }
+        return isValid;
     }
 
     private static boolean validateEmail(CredentialBean credential){
