@@ -1,8 +1,9 @@
 package by.bsuir.exchange.controller;
 
-import by.bsuir.exchange.command.Command;
+import by.bsuir.exchange.command.exception.CommandInitializationException;
 import by.bsuir.exchange.command.exception.CommandOperationException;
 import by.bsuir.exchange.command.factory.CommandFactory;
+import by.bsuir.exchange.command.Command;
 import by.bsuir.exchange.provider.ConfigurationProvider;
 
 import javax.servlet.RequestDispatcher;
@@ -31,11 +32,11 @@ public class Controller extends HttpServlet implements Servlet {
     }
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Command command = CommandFactory.getCommand(request);
         String page;
         try {
+            Command command = CommandFactory.getCommand(request);
             page = command.execute(request, response);
-        } catch (CommandOperationException e) {
+        } catch (CommandOperationException | CommandInitializationException e) {
             page = ConfigurationProvider.getProperty(ConfigurationProvider.ERROR_PAGE_PATH);
         }
 
