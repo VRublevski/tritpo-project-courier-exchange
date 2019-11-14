@@ -16,6 +16,8 @@ import by.bsuir.exchange.repository.specification.UserByEmailSqlSpecification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class HttpSessionManager implements CommandHandler {
@@ -35,9 +37,13 @@ public class HttpSessionManager implements CommandHandler {
     }
 
     private SqlRepository<UserBean> repository;
+    private Map<String, String> locales;
 
     private HttpSessionManager(SqlRepository<UserBean> repository){
         this.repository = repository;
+        locales = new HashMap<>();
+        locales.put("ru", "ru_RU");
+        locales.put("en", "en_EN");
     }
 
     public boolean login(HttpServletRequest request, CredentialBean credential) throws ManagerOperationException {
@@ -63,6 +69,14 @@ public class HttpSessionManager implements CommandHandler {
         }
     }
 
+    public boolean changeLocale(HttpServletRequest request){
+        String langProperty = SessionAttributesNameProvider.getProperty(SessionAttributesNameProvider.LANG);
+        String lang = request.getParameter(langProperty);
+        HttpSession session = request.getSession();
+        session.setAttribute(langProperty, locales.get(lang));
+        return true;
+    }
+
     @Override
     public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException {
         boolean status;
@@ -70,6 +84,10 @@ public class HttpSessionManager implements CommandHandler {
             case LOGIN: {
                 CredentialBean credential = (CredentialBean) request.getAttribute("credential");
                 status = login(request, credential);
+                break;
+            }
+            case SET_LOCALE:{
+                status = changeLocale(request);
                 break;
             }
             default: {

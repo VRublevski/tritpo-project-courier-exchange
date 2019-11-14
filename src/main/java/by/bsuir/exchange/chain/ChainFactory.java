@@ -44,6 +44,10 @@ public class ChainFactory { //Load on servlet initialization
                 chain = sessionChain;
                 break;
             }
+            case SET_LOCALE:{
+                chain = HttpSessionManager.getInstance();
+                break;
+            }
             default:{
                 createEmptyChain();
                 chain = emptyChain;

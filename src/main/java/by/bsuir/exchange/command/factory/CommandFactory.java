@@ -10,6 +10,9 @@ import by.bsuir.exchange.provider.ConfigurationProvider;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static by.bsuir.exchange.provider.ConfigurationProvider.HOME_PAGE_PATH;
 import static by.bsuir.exchange.provider.ConfigurationProvider.LOGIN_PAGE_PATH;
 
@@ -17,10 +20,14 @@ public class CommandFactory {
     private static final String COMMAND = "command";
     private static final int N_COMMANDS = 2;
 
+    private static Map<String, String> pageConstants;
+
     private static String[] successPages;
     private static String[] failurePages;
 
     static {
+        pageConstants = new HashMap<>();
+        pageConstants.put("login", LOGIN_PAGE_PATH);
         initSuccessPages();
     }
 
@@ -46,8 +53,22 @@ public class CommandFactory {
         } catch (ManagerInitializationException e) {
             throw new CommandInitializationException(e);
         }
-        String successPage = successPages[commandEnum.ordinal()];
-        String failurePage = failurePages[commandEnum.ordinal()];
+        String successPage;
+        String failurePage;
+        if (isSamePage(commandEnum)){
+            String pageParameter = request.getParameter("page");
+            String pagePropertyName = pageConstants.get(pageParameter);
+            String pageProperty = ConfigurationProvider.getProperty(pagePropertyName);
+            successPage = pageProperty;
+            failurePage = pageProperty;
+        }else{
+            successPage = successPages[commandEnum.ordinal()];
+            failurePage = failurePages[commandEnum.ordinal()];
+        }
         return new Command(handler, commandEnum, successPage, failurePage);
+    }
+
+    private static boolean isSamePage(CommandEnum command){
+        return command == CommandEnum.SET_LOCALE;
     }
 }

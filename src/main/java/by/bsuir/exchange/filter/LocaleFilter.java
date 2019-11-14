@@ -13,8 +13,8 @@ public class LocaleFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpSession session = req.getSession();
-        if (session.getAttribute("language") == null){
-            session.setAttribute("language", DEFAULT_LOCALE);
+        if (session.getAttribute("lang") == null){
+            session.setAttribute("lang", DEFAULT_LOCALE);
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
