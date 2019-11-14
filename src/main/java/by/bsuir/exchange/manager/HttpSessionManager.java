@@ -2,6 +2,8 @@ package by.bsuir.exchange.manager;
 
 import by.bsuir.exchange.bean.CredentialBean;
 import by.bsuir.exchange.bean.UserBean;
+import by.bsuir.exchange.chain.CommandHandler;
+import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
@@ -16,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
-public class HttpSessionManager {
+public class HttpSessionManager implements CommandHandler {
     private static HttpSessionManager instance;
 
     public static HttpSessionManager getInstance() throws ManagerInitializationException {
@@ -59,5 +61,21 @@ public class HttpSessionManager {
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }
+    }
+
+    @Override
+    public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException {
+        boolean status;
+        switch (command){
+            case LOGIN: {
+                CredentialBean credential = (CredentialBean) request.getAttribute("credential");
+                status = login(request, credential);
+                break;
+            }
+            default: {
+                throw new ManagerOperationException("Unexpected command");
+            }
+        }
+        return status;
     }
 }
