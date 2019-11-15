@@ -5,7 +5,7 @@ import by.bsuir.exchange.repository.specification.Specification;
 
 import java.util.Optional;
 
-public interface Repository<T> {
+public interface Repository<T, R, H> {
     void add(T entity) throws RepositoryOperationException;
-    Optional<T> find(Specification specification) throws RepositoryOperationException;
+    Optional<T> find(Specification<T, R, H> specification) throws RepositoryOperationException;
 }

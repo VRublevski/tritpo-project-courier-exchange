@@ -2,7 +2,6 @@ package by.bsuir.exchange.repository.impl;
 
 import by.bsuir.exchange.pool.ConnectionPool;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
-import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.repository.Repository;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
@@ -14,7 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public abstract class SqlRepository<T> implements Repository<T> {
+public abstract class SqlRepository<T> implements Repository<T, PreparedStatement, Connection> {
     private ConnectionPool pool;
 
 
@@ -27,17 +26,17 @@ public abstract class SqlRepository<T> implements Repository<T> {
     }
 
     @Override
-    public Optional<T> find(Specification specification) throws RepositoryOperationException {
+    public Optional<T> find(Specification<T, PreparedStatement, Connection> specification) throws RepositoryOperationException {
         Optional<T> bean;
         PreparedStatement preparedStatement = null;
         try{
             Connection connection = pool.getConnection();
-            String query = specification.specify();
-            preparedStatement = connection.prepareStatement(query);
+            specification.setHelperObject(connection);
+            preparedStatement = specification.specify();
             ResultSet resultSet = preparedStatement.executeQuery();
             bean = process(resultSet);
             pool.releaseConnection(connection);
-        } catch (SQLException | PoolTimeoutException e) {
+        } catch (Exception e) {
             throw new RepositoryOperationException(e);
         } finally {
             if (preparedStatement != null){

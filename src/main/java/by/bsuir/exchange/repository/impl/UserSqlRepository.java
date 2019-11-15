@@ -12,7 +12,7 @@ import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import java.sql.*;
 import java.util.Optional;
 
-public class UserSqlRepository extends SqlRepository<UserBean> {
+public class UserSqlRepository<T> extends SqlRepository<UserBean> {
 
     public UserSqlRepository() throws RepositoryInitializationException {
         super();
