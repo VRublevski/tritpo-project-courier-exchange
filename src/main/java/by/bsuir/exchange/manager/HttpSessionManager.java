@@ -5,6 +5,7 @@ import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
+import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
@@ -15,8 +16,6 @@ import by.bsuir.exchange.repository.specification.UserByEmailSqlSpecification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class HttpSessionManager implements CommandHandler {
@@ -36,13 +35,9 @@ public class HttpSessionManager implements CommandHandler {
     }
 
     private SqlRepository<UserBean> repository;
-    private Map<String, String> locales;
 
     private HttpSessionManager(SqlRepository<UserBean> repository){
         this.repository = repository;
-        locales = new HashMap<>();
-        locales.put("ru", "ru_RU");
-        locales.put("en", "en_EN");
     }
 
     public boolean login(HttpServletRequest request, UserBean userRequest) throws ManagerOperationException {
@@ -81,9 +76,10 @@ public class HttpSessionManager implements CommandHandler {
 
     public boolean changeLocale(HttpServletRequest request){
         String langProperty = SessionAttributesNameProvider.getProperty(SessionAttributesNameProvider.LANG);
-        String lang = request.getParameter(langProperty);
+        String langValue = request.getParameter(langProperty);
+        String newLang = SessionAttributesNameProvider.getProperty(langValue.toUpperCase());
         HttpSession session = request.getSession();
-        session.setAttribute(langProperty, locales.get(lang));
+        session.setAttribute(langProperty, newLang);
         return true;
     }
 
@@ -92,12 +88,18 @@ public class HttpSessionManager implements CommandHandler {
         boolean status;
         switch (command){
             case LOGIN: {
-                UserBean user = (UserBean) request.getAttribute("user");
+                String page = PageAttributesNameProvider.LOGIN_PAGE;
+                String attributeName = PageAttributesNameProvider.USER_ATTRIBUTE;
+                String attribute = PageAttributesNameProvider.getProperty(page, attributeName);
+                UserBean user = (UserBean) request.getAttribute(attribute);
                 status = login(request, user);
                 break;
             }
             case REGISTER: {
-                UserBean user = (UserBean) request.getAttribute("user");
+                String page = PageAttributesNameProvider.REGISTER_PAGE;
+                String attributeName = PageAttributesNameProvider.USER_ATTRIBUTE;
+                String attribute = PageAttributesNameProvider.getProperty(page, attributeName);
+                UserBean user = (UserBean) request.getAttribute(attribute);
                 status = register(request, user);
                 break;
             }
