@@ -1,29 +1,17 @@
 package by.bsuir.exchange.bean;
 
-import by.bsuir.exchange.entity.RoleEnum;
-
 public class UserBean {
-    private String name;
     private String email;
     private String password;
-    private RoleEnum role;
+    private String role;
 
     public UserBean() {
     }
 
-    public UserBean(String name, String email, String password, RoleEnum role) {
-        this.name = name;
+    public UserBean( String email, String password, String role) {
         this.email = email;
         this.password = password;
         this.role = role;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getEmail() {
@@ -42,11 +30,11 @@ public class UserBean {
         this.password = password;
     }
 
-    public RoleEnum getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(RoleEnum role) {
+    public void setRole(String role) {
         this.role = role;
     }
 }

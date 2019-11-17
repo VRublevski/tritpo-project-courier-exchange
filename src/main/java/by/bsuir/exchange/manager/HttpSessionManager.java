@@ -41,9 +41,9 @@ public class HttpSessionManager implements CommandHandler {
     }
 
     public boolean login(HttpServletRequest request, UserBean userRequest) throws ManagerOperationException {
-        Specification userLoginSpecification = new UserByEmailSqlSpecification(userRequest);
+        Specification userEmailSpecification = new UserByEmailSqlSpecification(userRequest);
         try{
-            Optional<UserBean> userOption = repository.find(userLoginSpecification);
+            Optional<UserBean> userOption = repository.find(userEmailSpecification);
             if (!userOption.isPresent()){
                 return false;
             }

@@ -1,6 +1,7 @@
 package by.bsuir.exchange.validator;
 
 import by.bsuir.exchange.bean.UserBean;
+import by.bsuir.exchange.entity.RoleEnum;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,19 +10,18 @@ public class UserValidator {
     private static final String EMAIL_PATTERN = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}" +
                                                 "\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
 
-    private static final String NAME_PATTERN = "^[A-Za-z]+$";
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=\\S+$).{6,16}$";
 
-    public static boolean validate(UserBean credential){
+    public static boolean validate(UserBean userBean){
         boolean isValid = true;
-        if (credential.getEmail() != null){
-            isValid &= validateEmail(credential);
+        if (userBean.getEmail() != null){
+            isValid &= validateEmail(userBean);
         }
-        if (credential.getPassword() != null){
-            isValid &= validatePassword(credential);
+        if (userBean.getPassword() != null){
+            isValid &= validatePassword(userBean);
         }
-        if (credential.getName() != null){
-            isValid &= validateName(credential);
+        if (userBean.getRole() != null){
+            isValid &= validateRole(userBean);
         }
         return isValid;
     }
@@ -33,17 +33,22 @@ public class UserValidator {
         return m.matches();
     }
 
-    private static boolean validateName(UserBean credential){
-        String name = credential.getName();
-        Pattern p = Pattern.compile(NAME_PATTERN);
-        Matcher m = p.matcher(name);
-        return m.matches();
-    }
-
     private static boolean validatePassword(UserBean credential){
         String password = credential.getPassword();
         Pattern p = Pattern.compile(PASSWORD_PATTERN);
         Matcher m = p.matcher(password);
         return m.matches();
+    }
+
+    private static boolean validateRole(UserBean user){
+        String roleString = user.getRole();
+        boolean status;
+        try {
+            RoleEnum.valueOf(roleString.toUpperCase());
+            status = true;
+        }catch (IllegalArgumentException e){
+            status = false;
+        }
+        return status;
     }
 }

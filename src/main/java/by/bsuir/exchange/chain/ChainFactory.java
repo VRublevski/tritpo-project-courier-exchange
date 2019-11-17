@@ -9,8 +9,10 @@ import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.validator.UserValidator;
+import org.apache.commons.beanutils.BeanUtils;
 
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.InvocationTargetException;
 
 public class ChainFactory { //Load on servlet initialization
     /*Chains*/
@@ -21,7 +23,7 @@ public class ChainFactory { //Load on servlet initialization
     private static CommandHandler userBeanCreator;
 
     /*Validators*/
-    private static CommandHandler credentialValidator;
+    private static CommandHandler userBeanValidator;
 
     /*Permissions checkers*/
     private static CommandHandler permissionChecker;
@@ -58,22 +60,22 @@ public class ChainFactory { //Load on servlet initialization
 
     private static void initBeanCreators(){
         userBeanCreator = (request, command) -> {
-            String page = PageAttributesNameProvider.LOGIN_PAGE;
+            UserBean user = new UserBean();
+            try {
+                BeanUtils.populate(user, request.getParameterMap());
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            String page = PageAttributesNameProvider.REGISTER_PAGE;
             String attributeProperty = PageAttributesNameProvider.USER_ATTRIBUTE;
             String attribute = PageAttributesNameProvider.getProperty(page, attributeProperty);
-            String email = request.getParameter("email");
-            String name = request.getParameter("name");
-            String password = request.getParameter("password");
-            String roleString = request.getParameter("role");
-            RoleEnum role = RoleEnum.valueOf(roleString.toUpperCase());
-            UserBean bean = new UserBean(name, email, password, role);
-            request.setAttribute(attribute, bean);
+            request.setAttribute(attribute, user);
             return true;
         };
     }
 
     private static void initValidators(){
-        credentialValidator = (request, command) -> {
+        userBeanValidator = (request, command) -> {
             String page = PageAttributesNameProvider.LOGIN_PAGE;
             String attributeProperty = PageAttributesNameProvider.USER_ATTRIBUTE;
             String attribute = PageAttributesNameProvider.getProperty(page, attributeProperty);
@@ -98,6 +100,6 @@ public class ChainFactory { //Load on servlet initialization
 
     private static void createSessionChain() throws ManagerInitializationException {
         HttpSessionManager manager = HttpSessionManager.getInstance();
-        sessionChain = userBeanCreator.chain(credentialValidator).chain(permissionChecker).chain(manager);
+        sessionChain = userBeanCreator.chain(userBeanValidator).chain(permissionChecker).chain(manager);
     }
 }
