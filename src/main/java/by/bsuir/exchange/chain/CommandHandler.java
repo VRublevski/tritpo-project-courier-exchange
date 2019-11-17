@@ -15,4 +15,11 @@ public interface CommandHandler {
     default CommandHandler chain(CommandHandler other){
         return (request, command) -> CommandHandler.this.handle(request, command) && other.handle(request, command);
     }
+
+    default CommandHandler branch(CommandHandler condition, CommandHandler success){
+        return (request, command) -> {
+            boolean status = condition.handle(request, command);
+            return status? success.handle(request, command):CommandHandler.this.handle(request, command) ;
+        };
+    }
 }
