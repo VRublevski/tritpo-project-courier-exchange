@@ -50,7 +50,7 @@ public class PermissionChecker {
         int i = RoleEnum.GUEST.ordinal();
         EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(CREATE, UPDATE);
         EnumSet<PermissionEnum> userPermissions = EnumSet.of(CREATE, UPDATE);
-        instance.roleCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(sessionPermissions);
+        instance.roleCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
         instance.roleCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(userPermissions);
     }
 
@@ -84,7 +84,7 @@ public class PermissionChecker {
         int iRole = role.ordinal();
         int iCommand = command.ordinal();
         for (int j = 0; j < N_RESOURCES; j++){
-            if (commandCompetencies[iCommand][j] == null && roleCompetencies[iRole][j] == null){
+            if (commandCompetencies[iCommand][j] == null){
                 continue;
             }
             if (!commandCompetencies[iCommand][j].equals(roleCompetencies[iRole][j])){
