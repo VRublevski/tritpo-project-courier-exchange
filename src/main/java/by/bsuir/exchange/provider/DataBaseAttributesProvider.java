@@ -9,6 +9,7 @@ public class DataBaseAttributesProvider {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 
     private static final Map<String, String> usersColumns = new HashMap<>();
+    private static final Map<String, String > clientColumns = new HashMap<>();
 
     public static final String DRIVER_NAME = "DRIVER_NAME";
     public static final String DATABASE_URL = "DATABASE_URL";
@@ -19,11 +20,21 @@ public class DataBaseAttributesProvider {
     public static final String PASSWORD = "PASSWORD";
     public static final String ROLE = "ROLE";
 
+    public static final String CLIENT_TABLE = "client";
+    public static final String NAME = "NAME";
+    public static final String SURNAME = "SURNAME";
+    public static final String USER_ID = "USER_ID";
+
     static {
         usersColumns.putIfAbsent(ID, "id");
         usersColumns.put(EMAIL, "email");
         usersColumns.put(PASSWORD, "password");
         usersColumns.put(ROLE, "role");
+
+        clientColumns.put(ID, "id");
+        clientColumns.put(NAME, "name");
+        clientColumns.put(SURNAME, "surname");
+        clientColumns.put(USER_ID, "user_id");
     }
 
     public static String getProperty(String name){
