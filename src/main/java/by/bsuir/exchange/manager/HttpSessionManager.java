@@ -3,6 +3,7 @@ package by.bsuir.exchange.manager;
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
+import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
@@ -70,11 +71,12 @@ public class HttpSessionManager implements CommandHandler {
             throw new ManagerOperationException(e);
         }
         HttpSession session = request.getSession();
-        session.setAttribute("role", user.getRole().toUpperCase());
+        RoleEnum role = RoleEnum.valueOf(user.getRole().toUpperCase());
+        session.setAttribute("role", role);
         return true;
     }
 
-    public boolean changeLocale(HttpServletRequest request){
+    private boolean changeLocale(HttpServletRequest request){
         String langProperty = SessionAttributesNameProvider.getProperty(SessionAttributesNameProvider.LANG);
         String langValue = request.getParameter(langProperty);
         String newLang = SessionAttributesNameProvider.getProperty(langValue.toUpperCase());
@@ -88,17 +90,13 @@ public class HttpSessionManager implements CommandHandler {
         boolean status;
         switch (command){
             case LOGIN: {
-                String page = PageAttributesNameProvider.LOGIN_PAGE;
-                String attributeName = PageAttributesNameProvider.USER_ATTRIBUTE;
-                String attribute = PageAttributesNameProvider.getProperty(page, attributeName);
+                String attribute = PageAttributesNameProvider.USER_ATTRIBUTE;
                 UserBean user = (UserBean) request.getAttribute(attribute);
                 status = login(request, user);
                 break;
             }
             case REGISTER: {
-                String page = PageAttributesNameProvider.REGISTER_PAGE;
-                String attributeName = PageAttributesNameProvider.USER_ATTRIBUTE;
-                String attribute = PageAttributesNameProvider.getProperty(page, attributeName);
+                String attribute = PageAttributesNameProvider.USER_ATTRIBUTE;
                 UserBean user = (UserBean) request.getAttribute(attribute);
                 status = register(request, user);
                 break;
