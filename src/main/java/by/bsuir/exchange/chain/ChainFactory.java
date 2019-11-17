@@ -19,9 +19,6 @@ public class ChainFactory { //Load on servlet initialization
     private static CommandHandler sessionChain;
     private static CommandHandler emptyChain;
 
-    /*Bean creators*/
-    private static CommandHandler userBeanCreator;
-
     /*Validators*/
     private static CommandHandler userBeanValidator;
 
@@ -29,7 +26,6 @@ public class ChainFactory { //Load on servlet initialization
     private static CommandHandler permissionChecker;
 
     static {
-        initBeanCreators();
         initPermissionCheckers();
         initValidators();
     }
@@ -39,10 +35,14 @@ public class ChainFactory { //Load on servlet initialization
         switch (command){
             case LOGIN:
             case REGISTER: {
+                UserBean user = new UserBean();
+                String page = PageAttributesNameProvider.GLOBAL_PAGE;
+                String property = PageAttributesNameProvider.USER_ATTRIBUTE;
+                CommandHandler userBeanCreator = getBeanCreator(user, page, property);
                 if (sessionChain == null){
                     createSessionChain();
                 }
-                chain = sessionChain;
+                chain = userBeanCreator.chain(sessionChain);
                 break;
             }
             case SET_LOCALE:{
@@ -58,18 +58,15 @@ public class ChainFactory { //Load on servlet initialization
         return chain;
     }
 
-    private static void initBeanCreators(){
-        userBeanCreator = (request, command) -> {
-            UserBean user = new UserBean();
+    private static <T> CommandHandler getBeanCreator(T bean, String page, String property){
+        return (request, command) -> {
             try {
-                BeanUtils.populate(user, request.getParameterMap());
+                BeanUtils.populate(bean, request.getParameterMap());
             } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
-            String page = PageAttributesNameProvider.REGISTER_PAGE;
-            String attributeProperty = PageAttributesNameProvider.USER_ATTRIBUTE;
-            String attribute = PageAttributesNameProvider.getProperty(page, attributeProperty);
-            request.setAttribute(attribute, user);
+            String attribute = PageAttributesNameProvider.getProperty(page, property);
+            request.setAttribute(attribute, bean);
             return true;
         };
     }
@@ -100,6 +97,6 @@ public class ChainFactory { //Load on servlet initialization
 
     private static void createSessionChain() throws ManagerInitializationException {
         HttpSessionManager manager = HttpSessionManager.getInstance();
-        sessionChain = userBeanCreator.chain(userBeanValidator).chain(permissionChecker).chain(manager);
+        sessionChain = userBeanValidator.chain(permissionChecker).chain(manager);
     }
 }
