@@ -9,7 +9,7 @@ public class UserBean {
     public UserBean() {
     }
 
-    public UserBean(int id, String email, String password, String role) {
+    public UserBean(long id, String email, String password, String role) {
         this.id = id;
         this.email = email;
         this.password = password;

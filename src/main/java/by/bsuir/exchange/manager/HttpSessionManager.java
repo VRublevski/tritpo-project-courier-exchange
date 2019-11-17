@@ -70,7 +70,7 @@ public class HttpSessionManager implements CommandHandler {
             throw new ManagerOperationException(e);
         }
         HttpSession session = request.getSession();
-        session.setAttribute("role", user.getRole());
+        session.setAttribute("role", user.getRole().toUpperCase());
         return true;
     }
 

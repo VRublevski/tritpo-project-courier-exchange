@@ -36,7 +36,7 @@ public class UserSqlRepository extends SqlRepository<UserBean> {
 
             column = DataBaseAttributesProvider.ID;
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
-            int id = resultSet.getInt(columnName);
+            long id = resultSet.getLong(columnName);
 
             UserBean user = new UserBean(id, email, password, role);
             optionUser = Optional.of(user);
