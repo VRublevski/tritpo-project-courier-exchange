@@ -18,28 +18,27 @@ public class PageAttributesNameProvider {
     public static final String USER_ATTRIBUTE = "USER_ATTRIBUTE";
 
 
-
     static {
         globalPage.put(LANG, "lang");
-        loginPage.put(USER_ATTRIBUTE, "user");
-        registerPage.put(USER_ATTRIBUTE, "user");
+        globalPage.put(USER_ATTRIBUTE, "user");
     }
 
     public static String getProperty(String page, String attribute){
         String result = null;
-        switch (page){
-            case GLOBAL_PAGE:{
-                result = globalPage.get(attribute);
-                break;
+        if (!page.equals(GLOBAL_PAGE)){
+            switch (page){
+                case LOGIN_PAGE : {
+                    result = loginPage.get(attribute);
+                    break;
+                }
+                case REGISTER_PAGE : {
+                    result = registerPage.get(attribute);
+                    break;
+                }
             }
-            case LOGIN_PAGE : {
-                result = loginPage.get(attribute);
-                break;
-            }
-            case REGISTER_PAGE : {
-                result = registerPage.get(attribute);
-                break;
-            }
+        }
+        if (result == null){
+            result = globalPage.get(attribute);
         }
         return result;
     }
