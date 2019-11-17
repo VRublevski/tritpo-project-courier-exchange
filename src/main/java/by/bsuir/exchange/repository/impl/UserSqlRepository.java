@@ -8,10 +8,7 @@ import by.bsuir.exchange.provider.DataBaseAttributesProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Optional;
 
 public class UserSqlRepository extends SqlRepository<UserBean> {
@@ -36,7 +33,12 @@ public class UserSqlRepository extends SqlRepository<UserBean> {
             column = DataBaseAttributesProvider.ROLE;
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             String role = resultSet.getString(columnName);
-            UserBean user = new UserBean(email, password, role);
+
+            column = DataBaseAttributesProvider.ID;
+            columnName = DataBaseAttributesProvider.getColumnName(table, column);
+            int id = resultSet.getInt(columnName);
+
+            UserBean user = new UserBean(id, email, password, role);
             optionUser = Optional.of(user);
         }
         return optionUser;
@@ -48,15 +50,21 @@ public class UserSqlRepository extends SqlRepository<UserBean> {
         try{
             ConnectionPool pool = ConnectionPool.getInstance();
             Connection connection = pool.getConnection();
-            PreparedStatement statement = connection.prepareStatement(template);
+            PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, user.getEmail());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getRole().toUpperCase());
-            statement.execute();
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0){
+                throw new RepositoryOperationException("Unable to perform operation");
+            }
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()){
+                user.setId(generatedKeys.getLong(1));
+            }
             pool.releaseConnection(connection);
         } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
             throw new RepositoryOperationException(e);
         }
-
     }
 }

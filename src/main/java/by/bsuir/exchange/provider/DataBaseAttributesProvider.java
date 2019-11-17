@@ -14,12 +14,13 @@ public class DataBaseAttributesProvider {
     public static final String DATABASE_URL = "DATABASE_URL";
 
     public static final String USER_TABLE = "user";
+    public static final String ID = "ID";
     public static final String EMAIL = "EMAIL";
     public static final String PASSWORD = "PASSWORD";
     public static final String ROLE = "ROLE";
-    public static final String NAME = "NAME";
 
     static {
+        usersColumns.putIfAbsent(ID, "id");
         usersColumns.put(EMAIL, "email");
         usersColumns.put(PASSWORD, "password");
         usersColumns.put(ROLE, "role");

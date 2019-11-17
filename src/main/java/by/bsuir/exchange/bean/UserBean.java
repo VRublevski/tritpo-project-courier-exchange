@@ -1,6 +1,7 @@
 package by.bsuir.exchange.bean;
 
 public class UserBean {
+    private long id;
     private String email;
     private String password;
     private String role;
@@ -8,10 +9,19 @@ public class UserBean {
     public UserBean() {
     }
 
-    public UserBean( String email, String password, String role) {
+    public UserBean(int id, String email, String password, String role) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getEmail() {
