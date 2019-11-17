@@ -14,15 +14,15 @@
 <div id="wrapper">
     <header>
         <a href=""><img src="<c:url value="/images/logo.png"/>" alt="Logo"></a> <br>
-        <a href="<c:url value="/controller?command=set_locale&lang=ru&page=login"/>">ru</a>
+        <a href="<c:url value="/controller?command=set_locale&lang=ru_RU&page=login"/>">ru</a>
     </header>
     <div id="heading">
-        <h1>LOGIN</h1>
+        <h1><fmt:message key="pagename" bundle="${rb}"/></h1>
     </div>
     <div class="form">
         <form name="loginForm" method="POST" action="controller" class="form-signin">
             <input type="hidden" name="command" value="login" />
-            <input type="email" name="email" value="" placeholder="<fmt:message key="form.email" bundle="${rb}" />" maxlength="16" required autofocus/><br/>
+            <input type="email" name="email" value="" placeholder="<fmt:message key="form.email" bundle="${rb}" />" maxlength="32" required autofocus/><br/>
             <input type="password" name="password" value="" placeholder="<fmt:message key="form.password" bundle="${rb}" />" maxlength="16" required/><br/>
             <button id="login-button" name="submit" type="submit">
                 <fmt:message key="button.submit" bundle="${rb}"/>

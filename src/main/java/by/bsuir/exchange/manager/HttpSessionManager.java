@@ -53,8 +53,8 @@ public class HttpSessionManager implements CommandHandler {
             String expectedPassword = userFound.getPassword();
             if (actualPassword.equals(expectedPassword)){
                 HttpSession session = request.getSession();
-                String roleAttribute = SessionAttributesNameProvider.getProperty(SessionAttributesNameProvider.ROLE);
-                session.setAttribute(roleAttribute, userFound.getRole());
+                String role = SessionAttributesNameProvider.ROLE;
+                session.setAttribute(role, userFound.getRole());
                 return true;
             }else{
                 return false;
@@ -77,11 +77,10 @@ public class HttpSessionManager implements CommandHandler {
     }
 
     private boolean changeLocale(HttpServletRequest request){
-        String langProperty = SessionAttributesNameProvider.getProperty(SessionAttributesNameProvider.LANG);
-        String langValue = request.getParameter(langProperty);
-        String newLang = SessionAttributesNameProvider.getProperty(langValue.toUpperCase());
+        String langAttribute = SessionAttributesNameProvider.LANG;
+        String newLang = request.getParameter(langAttribute);
         HttpSession session = request.getSession();
-        session.setAttribute(langProperty, newLang);
+        session.setAttribute(langAttribute, newLang);
         return true;
     }
 
