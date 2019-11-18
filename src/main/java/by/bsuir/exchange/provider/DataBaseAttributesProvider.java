@@ -25,6 +25,9 @@ public class DataBaseAttributesProvider {
     public static final String SURNAME = "SURNAME";
     public static final String USER_ID = "USER_ID";
 
+    public static final String COURIER_TABLE = "courier";
+    public static final String TRANSPORT = "TRANSPORT";
+
     static {
         usersColumns.putIfAbsent(ID, "id");
         usersColumns.put(EMAIL, "email");

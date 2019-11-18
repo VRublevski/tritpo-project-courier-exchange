@@ -13,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+//FIXME add uses predefined names of tables
+
 public abstract class SqlRepository<T> implements Repository<T, PreparedStatement, Connection> {
     private ConnectionPool pool;
 
