@@ -6,6 +6,9 @@ public class ClientBean {
     private String surname;
     private long userId;
 
+    public ClientBean() {
+    }
+
     public ClientBean(long id, String name, String surname, long userId) {
         this.id = id;
         this.name = name;

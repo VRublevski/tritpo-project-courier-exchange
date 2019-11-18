@@ -45,7 +45,7 @@ public class PermissionChecker {
         EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(CREATE, UPDATE);
         instance.commandCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
     }
-
+    /*Fixme admin creation*/
     private static void addGuestCompetencies(){
         int i = RoleEnum.GUEST.ordinal();
         EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(CREATE, UPDATE);

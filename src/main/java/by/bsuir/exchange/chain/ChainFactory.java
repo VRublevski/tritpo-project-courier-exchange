@@ -60,7 +60,7 @@ public class ChainFactory { //Load on servlet initialization
             case REGISTER: {
                 CommandHandler isCourier = (request, command1) -> {
                     HttpSession session = request.getSession();
-                    RoleEnum role = (RoleEnum) session.getAttribute("role");
+                    RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
                     return role == RoleEnum.COURIER;
                 };
                 CommandHandler branch = clientBranch.branch(isCourier, courierBranch);
@@ -114,8 +114,7 @@ public class ChainFactory { //Load on servlet initialization
 
     private static void initPermissionCheckers(){
         permissionChecker = (request, command) -> {
-            String property = SessionAttributesNameProvider.ROLE;
-            String attribute = SessionAttributesNameProvider.getProperty(property);
+            String attribute = SessionAttributesNameProvider.ROLE;
             HttpSession session = request.getSession();
             RoleEnum role = (RoleEnum) session.getAttribute(attribute);
             return PermissionChecker.getInstance().checkPermission(role, command);
@@ -150,7 +149,7 @@ public class ChainFactory { //Load on servlet initialization
     private static void initCourierBranch() throws ManagerInitializationException {
         String attribute = PageAttributesNameProvider.COURIER_ATTRIBUTE;
         CommandHandler beanCreator = (request, command) -> {
-            ClientBean user = new ClientBean();
+            CourierBean user = new CourierBean();
             return getBeanCreator(user, attribute).handle(request, command);
         };
         CourierManager manager = CourierManager.getInstance();
