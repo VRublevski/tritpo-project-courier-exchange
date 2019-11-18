@@ -7,12 +7,14 @@ import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
+import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.ClientSqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class ClientManager implements CommandHandler {
     private static ClientManager instance;
@@ -56,11 +58,13 @@ public class ClientManager implements CommandHandler {
         String userAttribute = PageAttributesNameProvider.USER_ATTRIBUTE;
         UserBean user = (UserBean) request.getAttribute(userAttribute);
 
+        HttpSession session = request.getSession();
         long userId = user.getId();
-        ClientBean client = (ClientBean) request.getAttribute("client");
+        ClientBean client = (ClientBean) request.getAttribute(PageAttributesNameProvider.CLIENT_ATTRIBUTE);
         client.setUserId(userId);
         try {
             clientRepository.add(client);
+            session.setAttribute(SessionAttributesNameProvider.ID,  client.getId());
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }

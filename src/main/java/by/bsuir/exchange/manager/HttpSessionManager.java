@@ -72,7 +72,7 @@ public class HttpSessionManager implements CommandHandler {
         }
         HttpSession session = request.getSession();
         RoleEnum role = RoleEnum.valueOf(user.getRole().toUpperCase());
-        session.setAttribute("role", role);
+        session.setAttribute(SessionAttributesNameProvider.ROLE, role);
         return true;
     }
 
