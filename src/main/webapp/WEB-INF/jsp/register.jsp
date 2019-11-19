@@ -21,15 +21,15 @@
         </ul>
     </nav>
     <div id="heading">
-        <h1>REGISTER</h1>
+        <h1><fmt:message key="pagename" bundle="${rb}"/></h1>
     </div>
     <div class="form">
         <form name="registerForm" method="POST" action="controller" class="form-signin">
             <input type="hidden" name="command" value="register" />
-            <input type="text" name="email" value="" placeholder="<fmt:message key="form.email" bundle="${rb}" />" maxlength="16" required autofocus/><br/>
+            <input type="text" name="email" value="" placeholder="<fmt:message key="form.email" bundle="${rb}" />" maxlength="32" required autofocus/><br/>
             <input type="text" name="name" value="" placeholder="<fmt:message key="form.name" bundle="${rb}" />" maxlength="16" required/><br/>
             <input type="password" name="password" value="" placeholder="<fmt:message key="form.password" bundle="${rb}" />" maxlength="16" required/><br/>
-            Choose your role:<br/>
+            <fmt:message key="form.role" bundle="${rb}"/>:<br/>
             <input type ="radio" name="role" value="client" checked="checked"/> Client
             <input type= "radio" name="role" value ="courier"/> Courier
             <button id="register-button" name="submit" type="submit">
