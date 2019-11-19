@@ -9,6 +9,8 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 public class ClientSqlRepository extends SqlRepository<ClientBean> {
@@ -18,9 +20,10 @@ public class ClientSqlRepository extends SqlRepository<ClientBean> {
     }
 
     @Override
-    public Optional<ClientBean> process(ResultSet resultSet) throws SQLException {
-        Optional<ClientBean> optionClient = Optional.empty();
-        if (resultSet.next()){
+    public Optional<List<ClientBean>> process(ResultSet resultSet) throws SQLException {
+        Optional< List< ClientBean> > optionList = Optional.empty();
+        List< ClientBean > clients = new LinkedList<>();
+        while (resultSet.next()){
             String table = DataBaseAttributesProvider.CLIENT_TABLE;
             String column = DataBaseAttributesProvider.NAME;
             String columnName = DataBaseAttributesProvider.getColumnName(table, column);
@@ -38,10 +41,13 @@ public class ClientSqlRepository extends SqlRepository<ClientBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long user_id = resultSet.getLong(columnName);
 
-            ClientBean user = new ClientBean(id, name, surname, user_id);
-            optionClient = Optional.of(user);
+            ClientBean client = new ClientBean(id, name, surname, user_id);
+            clients.add(client);
         }
-        return optionClient;
+        if (clients.size() != 0 ){
+            optionList = Optional.of(clients);
+        }
+        return optionList;
     }
 
     /*Sets id of the bean argument on success*/

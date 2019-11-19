@@ -17,6 +17,9 @@ import by.bsuir.exchange.repository.specification.UserByEmailSqlSpecification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 
 public class HttpSessionManager implements CommandHandler {
@@ -39,49 +42,6 @@ public class HttpSessionManager implements CommandHandler {
 
     private HttpSessionManager(SqlRepository<UserBean> repository){
         this.repository = repository;
-    }
-
-    public boolean login(HttpServletRequest request, UserBean userRequest) throws ManagerOperationException {
-        Specification userEmailSpecification = new UserByEmailSqlSpecification(userRequest);
-        try{
-            Optional<UserBean> userOption = repository.find(userEmailSpecification);
-            if (!userOption.isPresent()){
-                return false;
-            }
-            UserBean userFound = userOption.get();
-            String actualPassword = userRequest.getPassword();
-            String expectedPassword = userFound.getPassword();
-            if (actualPassword.equals(expectedPassword)){
-                HttpSession session = request.getSession();
-                String role = SessionAttributesNameProvider.ROLE;
-                session.setAttribute(role, userFound.getRole());
-                return true;
-            }else{
-                return false;
-            }
-        } catch (RepositoryOperationException e) {
-            throw new ManagerOperationException(e);
-        }
-    }
-
-    public boolean register(HttpServletRequest request, UserBean user) throws ManagerOperationException {
-        try {
-            repository.add(user);
-        } catch (RepositoryOperationException e) {
-            throw new ManagerOperationException(e);
-        }
-        HttpSession session = request.getSession();
-        RoleEnum role = RoleEnum.valueOf(user.getRole().toUpperCase());
-        session.setAttribute(SessionAttributesNameProvider.ROLE, role);
-        return true;
-    }
-
-    private boolean changeLocale(HttpServletRequest request){
-        String langAttribute = SessionAttributesNameProvider.LANG;
-        String newLang = request.getParameter(langAttribute);
-        HttpSession session = request.getSession();
-        session.setAttribute(langAttribute, newLang);
-        return true;
     }
 
     @Override
@@ -109,5 +69,48 @@ public class HttpSessionManager implements CommandHandler {
             }
         }
         return status;
+    }
+
+    private boolean login(HttpServletRequest request, UserBean userRequest) throws ManagerOperationException {
+        Specification<UserBean, PreparedStatement, Connection> userEmailSpecification = new UserByEmailSqlSpecification(userRequest);
+        try{
+            Optional<List<UserBean>> userOption = repository.find(userEmailSpecification);
+            if (!userOption.isPresent()){
+                return false;
+            }
+            UserBean userFound = userOption.get().get(0);
+            String actualPassword = userRequest.getPassword();
+            String expectedPassword = userFound.getPassword();
+            if (actualPassword.equals(expectedPassword)){
+                HttpSession session = request.getSession();
+                String role = SessionAttributesNameProvider.ROLE;
+                session.setAttribute(role, userFound.getRole());
+                return true;
+            }else{
+                return false;
+            }
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
+        }
+    }
+
+    private boolean register(HttpServletRequest request, UserBean user) throws ManagerOperationException {
+        try {
+            repository.add(user);
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
+        }
+        HttpSession session = request.getSession();
+        RoleEnum role = RoleEnum.valueOf(user.getRole().toUpperCase());
+        session.setAttribute(SessionAttributesNameProvider.ROLE, role);
+        return true;
+    }
+
+    private boolean changeLocale(HttpServletRequest request){
+        String langAttribute = SessionAttributesNameProvider.LANG;
+        String newLang = request.getParameter(langAttribute);
+        HttpSession session = request.getSession();
+        session.setAttribute(langAttribute, newLang);
+        return true;
     }
 }

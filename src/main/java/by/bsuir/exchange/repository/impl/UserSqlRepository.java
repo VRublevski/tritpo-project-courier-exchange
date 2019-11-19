@@ -9,6 +9,8 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 public class UserSqlRepository extends SqlRepository<UserBean> {
@@ -18,9 +20,10 @@ public class UserSqlRepository extends SqlRepository<UserBean> {
     }
 
     @Override
-    public Optional<UserBean> process(ResultSet resultSet) throws SQLException {
-        Optional<UserBean> optionUser = Optional.empty();
-        if (resultSet.next()){
+    public Optional<List<UserBean>> process(ResultSet resultSet) throws SQLException {
+        Optional< List< UserBean > > optionList = Optional.empty();
+        List< UserBean > users = new LinkedList<>();
+        while (resultSet.next()){
             String table = DataBaseAttributesProvider.USER_TABLE;
             String column = DataBaseAttributesProvider.EMAIL;
             String columnName = DataBaseAttributesProvider.getColumnName(table, column);
@@ -39,9 +42,12 @@ public class UserSqlRepository extends SqlRepository<UserBean> {
             long id = resultSet.getLong(columnName);
 
             UserBean user = new UserBean(id, email, password, role);
-            optionUser = Optional.of(user);
+            users.add(user);
         }
-        return optionUser;
+        if (users.size() != 0 ){
+            optionList = Optional.of(users);
+        }
+        return optionList;
     }
 
     @Override

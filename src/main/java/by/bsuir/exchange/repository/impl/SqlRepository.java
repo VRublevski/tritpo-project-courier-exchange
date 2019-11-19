@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 //FIXME add uses predefined names of tables
@@ -28,15 +29,15 @@ public abstract class SqlRepository<T> implements Repository<T, PreparedStatemen
     }
 
     @Override
-    public Optional<T> find(Specification<T, PreparedStatement, Connection> specification) throws RepositoryOperationException {
-        Optional<T> bean;
+    public Optional<List<T>> find(Specification<T, PreparedStatement, Connection> specification) throws RepositoryOperationException {
+        Optional< List<T> > list;
         PreparedStatement preparedStatement = null;
         try{
             Connection connection = pool.getConnection();
             specification.setHelperObject(connection);
             preparedStatement = specification.specify();
             ResultSet resultSet = preparedStatement.executeQuery();
-            bean = process(resultSet);
+            list = process(resultSet);
             pool.releaseConnection(connection);
         } catch (Exception e) {
             throw new RepositoryOperationException(e);
@@ -49,8 +50,8 @@ public abstract class SqlRepository<T> implements Repository<T, PreparedStatemen
                 }
             }
         }
-        return bean;
+        return list;
     }
 
-    public abstract Optional<T> process(ResultSet resultSet) throws SQLException;
+    public abstract Optional< List<T> > process(ResultSet resultSet) throws SQLException;
 }
