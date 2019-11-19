@@ -71,6 +71,10 @@ public class ChainFactory { //Load on servlet initialization
                 chain = HttpSessionManager.getInstance();
                 break;
             }
+            case GET_COURIERS: {
+                chain = CourierManager.getInstance();
+                break;
+            }
             default:{
                 createEmptyChain();
                 chain = emptyChain;

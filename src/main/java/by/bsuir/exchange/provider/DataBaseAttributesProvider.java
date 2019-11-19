@@ -10,6 +10,7 @@ public class DataBaseAttributesProvider {
 
     private static final Map<String, String> usersColumns = new HashMap<>();
     private static final Map<String, String > clientColumns = new HashMap<>();
+    private static final Map<String, String > courierColumns = new HashMap<>();
 
     public static final String DRIVER_NAME = "DRIVER_NAME";
     public static final String DATABASE_URL = "DATABASE_URL";
@@ -29,7 +30,7 @@ public class DataBaseAttributesProvider {
     public static final String TRANSPORT = "TRANSPORT";
 
     static {
-        usersColumns.putIfAbsent(ID, "id");
+        usersColumns.put(ID, "id");
         usersColumns.put(EMAIL, "email");
         usersColumns.put(PASSWORD, "password");
         usersColumns.put(ROLE, "role");
@@ -38,6 +39,13 @@ public class DataBaseAttributesProvider {
         clientColumns.put(NAME, "name");
         clientColumns.put(SURNAME, "surname");
         clientColumns.put(USER_ID, "user_id");
+
+
+        courierColumns.put(ID, "id");
+        courierColumns.put(NAME, "name");
+        courierColumns.put(SURNAME, "surname");
+        courierColumns.put(TRANSPORT, "transport");
+        courierColumns.put(USER_ID, "user_id");
     }
 
     public static String getProperty(String name){
@@ -49,6 +57,14 @@ public class DataBaseAttributesProvider {
         switch (tableName){
             case USER_TABLE :{
                 columnNames = usersColumns;
+                break;
+            }
+            case CLIENT_TABLE : {
+                columnNames = clientColumns;
+                break;
+            }
+            case COURIER_TABLE : {
+                columnNames = courierColumns;
                 break;
             }
         }

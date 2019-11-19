@@ -12,9 +12,16 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.CourierSqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
+import by.bsuir.exchange.repository.specification.CourierAllSpecification;
+import by.bsuir.exchange.repository.specification.Specification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class CourierManager implements CommandHandler {
     private static CourierManager instance;
@@ -47,6 +54,10 @@ public class CourierManager implements CommandHandler {
                 status = register(request);
                 break;
             }
+            case GET_COURIERS:{
+                status = getCouriers(request);
+                break;
+            }
             default: {
                 throw new ManagerOperationException("Unexpected command");
             }
@@ -68,6 +79,22 @@ public class CourierManager implements CommandHandler {
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }
+        return true;
+    }
+
+
+    private boolean getCouriers(HttpServletRequest request) throws ManagerOperationException {
+        Specification<CourierBean, PreparedStatement, Connection> specification = new CourierAllSpecification();
+        List<CourierBean > couriers = Collections.emptyList();
+        try {
+            Optional< List< CourierBean > > optionalCouriers = courierRepository.find(specification);
+            if (optionalCouriers.isPresent()){
+                couriers = optionalCouriers.get();
+            }
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
+        }
+        request.setAttribute("lst", couriers);
         return true;
     }
 

@@ -34,7 +34,7 @@ class Permission{
 }
 
 public class PermissionChecker {
-    private final static int N_COMMANDS = 4;
+    private final static int N_COMMANDS = 5;
     private final static int N_RESOURCES = 2;
     private final static int N_ROLES = 4;
 

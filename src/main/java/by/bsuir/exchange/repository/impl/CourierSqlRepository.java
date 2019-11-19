@@ -9,6 +9,8 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 public class CourierSqlRepository extends SqlRepository<CourierBean> {
@@ -18,9 +20,10 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
     }
 
     @Override
-    public Optional<CourierBean> process(ResultSet resultSet) throws SQLException {
-        Optional<CourierBean> optionClient = Optional.empty();
-        if (resultSet.next()){
+    public Optional<List<CourierBean>> process(ResultSet resultSet) throws SQLException {
+        Optional< List< CourierBean> > optionList = Optional.empty();
+        List< CourierBean > couriers = new LinkedList<>();
+        while (resultSet.next()){
             String table = DataBaseAttributesProvider.COURIER_TABLE;
             String column = DataBaseAttributesProvider.NAME;
             String columnName = DataBaseAttributesProvider.getColumnName(table, column);
@@ -42,10 +45,14 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long user_id = resultSet.getLong(columnName);
 
-            CourierBean user = new CourierBean(id, name, surname, transport, user_id);
-            optionClient = Optional.of(user);
+            CourierBean courier = new CourierBean(id, name, surname, transport, user_id);
+            couriers.add(courier);
         }
-        return optionClient;
+
+        if (couriers.size() != 0 ){
+            optionList = Optional.of(couriers);
+        }
+        return optionList;
     }
 
     @Override
