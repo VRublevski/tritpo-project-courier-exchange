@@ -11,6 +11,7 @@ public class DataBaseAttributesProvider {
     private static final Map<String, String> usersColumns = new HashMap<>();
     private static final Map<String, String > clientColumns = new HashMap<>();
     private static final Map<String, String > courierColumns = new HashMap<>();
+    private static final Map<String, String > deliveryColumns = new HashMap<>();
 
     public static final String DRIVER_NAME = "DRIVER_NAME";
     public static final String DATABASE_URL = "DATABASE_URL";
@@ -29,6 +30,13 @@ public class DataBaseAttributesProvider {
     public static final String COURIER_TABLE = "courier";
     public static final String TRANSPORT = "TRANSPORT";
 
+    public static final String DELIVERY_TABLE = "delivery";
+    public static final String CLIENT_ID = "CLIENT_ID";
+    public static final String CLIENT_FINISHED = "CLIENT_FINISHED";
+    public static final String COURIER_ID = "COURIER_ID";
+    public static final String COURIER_FINISHED = "COURIER_FINISHED";
+
+    //FIXME why one should do this???
     static {
         usersColumns.put(ID, "id");
         usersColumns.put(EMAIL, "email");
@@ -46,6 +54,12 @@ public class DataBaseAttributesProvider {
         courierColumns.put(SURNAME, "surname");
         courierColumns.put(TRANSPORT, "transport");
         courierColumns.put(USER_ID, "user_id");
+
+        deliveryColumns.put(ID, "id");
+        deliveryColumns.put(CLIENT_ID, "clientId");
+        deliveryColumns.put(CLIENT_FINISHED, "clientFinished");
+        deliveryColumns.put(COURIER_ID, "courierId");
+        deliveryColumns.put(COURIER_FINISHED, "courierFinished");
     }
 
     public static String getProperty(String name){

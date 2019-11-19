@@ -8,6 +8,7 @@ import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.logic.PermissionChecker;
 import by.bsuir.exchange.manager.ClientManager;
 import by.bsuir.exchange.manager.CourierManager;
+import by.bsuir.exchange.manager.DeliveryManager;
 import by.bsuir.exchange.manager.HttpSessionManager;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
@@ -72,7 +73,13 @@ public class ChainFactory { //Load on servlet initialization
                 break;
             }
             case GET_COURIERS: {
-                chain = CourierManager.getInstance();
+                CommandHandler manager = CourierManager.getInstance();
+                chain = permissionChecker.chain(manager);
+                break;
+            }
+            case REQUEST_DELIVERY: {
+                CommandHandler manager = DeliveryManager.getInstance();
+                chain = permissionChecker.chain(manager);
                 break;
             }
             default:{

@@ -8,8 +8,7 @@ import by.bsuir.exchange.entity.RoleEnum;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import static by.bsuir.exchange.entity.PermissionEnum.CREATE;
-import static by.bsuir.exchange.entity.PermissionEnum.UPDATE;
+import static by.bsuir.exchange.entity.PermissionEnum.*;
 
 class Permission{
     private EnumSet<PermissionEnum> permissions;
@@ -34,11 +33,33 @@ class Permission{
 }
 
 public class PermissionChecker {
-    private final static int N_COMMANDS = 5;
-    private final static int N_RESOURCES = 2;
+    private final static int N_COMMANDS = 6;
+    private final static int N_RESOURCES = 3;
     private final static int N_ROLES = 4;
 
+    private Permission[][] roleCompetencies;
+    private Permission[][] commandCompetencies;
+    private PermissionChecker(){}
+
     private static PermissionChecker instance;
+
+    public static PermissionChecker getInstance(){
+        if (instance == null){
+            instance = new PermissionChecker();
+            instance.commandCompetencies = new Permission[N_ROLES][N_RESOURCES];
+            instance.roleCompetencies = new Permission[N_COMMANDS][N_RESOURCES];
+
+            addLoginCommandCompetencies();
+            addRegisterCommandCompetencies();
+            addGetCourierCommandCompetencies();
+
+            addGuestCompetencies();
+            addClientCompetencies();
+        }
+
+        return instance;
+    }
+
 
     private static void addLoginCommandCompetencies(){
         int i = CommandEnum.LOGIN.ordinal();
@@ -60,25 +81,17 @@ public class PermissionChecker {
         instance.commandCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(userPermissions);
     }
 
-    public static PermissionChecker getInstance(){
-        if (instance == null){
-            instance = new PermissionChecker();
-            instance.commandCompetencies = new Permission[N_ROLES][N_RESOURCES];
-            instance.roleCompetencies = new Permission[N_COMMANDS][N_RESOURCES];
-
-            addLoginCommandCompetencies();
-            addRegisterCommandCompetencies();
-            addGuestCompetencies();
-
-        }
-
-        return instance;
+    private static void addGetCourierCommandCompetencies(){
+        int i = CommandEnum.GET_COURIERS.ordinal();
+        EnumSet<PermissionEnum> courierPermissions = EnumSet.of(READ);
+        instance.commandCompetencies[i][ResourceEnum.COURIER.ordinal()] = new Permission(courierPermissions);
     }
 
-    private Permission[][] roleCompetencies;
-    private Permission[][] commandCompetencies;
-    private PermissionChecker(){}
-
+    private static void addClientCompetencies(){
+        int i = RoleEnum.CLIENT.ordinal();
+        EnumSet<PermissionEnum> courierPermissions = EnumSet.of(READ);
+        instance.roleCompetencies[i][ResourceEnum.COURIER.ordinal()] = new Permission(courierPermissions);
+    }
 
     public boolean checkPermission(RoleEnum role, CommandEnum command){
         int iRole = role.ordinal();
