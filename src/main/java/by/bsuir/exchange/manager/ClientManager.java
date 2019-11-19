@@ -12,9 +12,15 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.ClientSqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
+import by.bsuir.exchange.repository.specification.ClientByUserIdSpecification;
+import by.bsuir.exchange.repository.specification.Specification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 
 public class ClientManager implements CommandHandler {
     private static ClientManager instance;
@@ -46,9 +52,33 @@ public class ClientManager implements CommandHandler {
                 status = register(request);
                 break;
             }
+            case LOGIN: {
+                status = login(request);
+                break;
+            }
             default: {
                 throw new ManagerOperationException("Unexpected command");
             }
+        }
+        return status;
+    }
+
+    private boolean login(HttpServletRequest request) throws ManagerOperationException {
+        boolean status = false;
+        UserBean user = (UserBean) request.getAttribute(PageAttributesNameProvider.USER_ATTRIBUTE);
+        long userId = user.getId();
+        Specification<ClientBean, PreparedStatement, Connection> specification = new ClientByUserIdSpecification(userId);
+        try {
+            Optional<List< ClientBean > > clientsOptional = clientRepository.find(specification);
+            if (clientsOptional.isPresent()){
+                ClientBean client = clientsOptional.get().get(0);
+                request.setAttribute(PageAttributesNameProvider.CLIENT_ATTRIBUTE, client);
+                HttpSession session = request.getSession();
+                session.setAttribute(SessionAttributesNameProvider.ID, client.getId());
+                status = true;
+            }
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
         }
         return status;
     }
@@ -58,12 +88,13 @@ public class ClientManager implements CommandHandler {
         String userAttribute = PageAttributesNameProvider.USER_ATTRIBUTE;
         UserBean user = (UserBean) request.getAttribute(userAttribute);
 
-        HttpSession session = request.getSession();
         long userId = user.getId();
         ClientBean client = (ClientBean) request.getAttribute(PageAttributesNameProvider.CLIENT_ATTRIBUTE);
         client.setUserId(userId);
         try {
             clientRepository.add(client);
+            request.setAttribute(PageAttributesNameProvider.CLIENT_ATTRIBUTE, client);
+            HttpSession session = request.getSession();
             session.setAttribute(SessionAttributesNameProvider.ID,  client.getId());
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);

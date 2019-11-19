@@ -45,7 +45,7 @@ public class CommandFactory {
     }
 
     public static Command getCommand(HttpServletRequest request) throws CommandInitializationException {
-        String action = (String) request.getAttribute(COMMAND);
+        String action = request.getParameter(COMMAND);
         CommandEnum commandEnum;
         if (action == null || action.isEmpty()){
             commandEnum = CommandEnum.EMPTY;

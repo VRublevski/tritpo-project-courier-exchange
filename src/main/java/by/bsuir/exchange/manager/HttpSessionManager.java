@@ -83,8 +83,9 @@ public class HttpSessionManager implements CommandHandler {
             String expectedPassword = userFound.getPassword();
             if (actualPassword.equals(expectedPassword)){
                 HttpSession session = request.getSession();
-                String role = SessionAttributesNameProvider.ROLE;
-                session.setAttribute(role, userFound.getRole());
+                RoleEnum role = RoleEnum.valueOf(userFound.getRole().toUpperCase());
+                session.setAttribute(SessionAttributesNameProvider.ROLE, role);
+                request.setAttribute(PageAttributesNameProvider.USER_ATTRIBUTE, userFound);
                 return true;
             }else{
                 return false;

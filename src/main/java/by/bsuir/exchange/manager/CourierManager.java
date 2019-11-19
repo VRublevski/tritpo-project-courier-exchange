@@ -13,6 +13,7 @@ import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.CourierSqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
 import by.bsuir.exchange.repository.specification.CourierAllSpecification;
+import by.bsuir.exchange.repository.specification.CourierByUserIdSpecification;
 import by.bsuir.exchange.repository.specification.Specification;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +55,10 @@ public class CourierManager implements CommandHandler {
                 status = register(request);
                 break;
             }
+            case LOGIN: {
+                status = login(request);
+                break;
+            }
             case GET_COURIERS:{
                 status = getCouriers(request);
                 break;
@@ -65,21 +70,44 @@ public class CourierManager implements CommandHandler {
         return status;
     }
 
+
     private boolean register(HttpServletRequest request) throws ManagerOperationException {
         String userAttribute = PageAttributesNameProvider.USER_ATTRIBUTE;
         UserBean user = (UserBean) request.getAttribute(userAttribute);
 
-        HttpSession session = request.getSession();
         long userId = user.getId();
         CourierBean courier = (CourierBean) request.getAttribute(PageAttributesNameProvider.COURIER_ATTRIBUTE);
         courier.setUserId(userId);
         try {
             courierRepository.add(courier);
+            request.setAttribute(PageAttributesNameProvider.COURIER_ATTRIBUTE, courier);
+            HttpSession session = request.getSession();
             session.setAttribute(SessionAttributesNameProvider.ID,  courier.getId());
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }
         return true;
+    }
+
+
+    private boolean login(HttpServletRequest request) throws ManagerOperationException {
+        boolean status = false;
+        UserBean user = (UserBean) request.getAttribute(PageAttributesNameProvider.USER_ATTRIBUTE);
+        long userId = user.getId();
+        Specification<CourierBean, PreparedStatement, Connection> specification = new CourierByUserIdSpecification(userId);
+        try {
+            Optional<List< CourierBean > > clientsOptional = courierRepository.find(specification);
+            if (clientsOptional.isPresent()){
+                CourierBean courier = clientsOptional.get().get(0);
+                request.setAttribute(PageAttributesNameProvider.COURIER_ATTRIBUTE, courier);
+                HttpSession session = request.getSession();
+                session.setAttribute(SessionAttributesNameProvider.ID, courier.getId());
+                status = true;
+            }
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
+        }
+        return status;
     }
 
 
