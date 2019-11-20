@@ -77,6 +77,11 @@ public class ChainFactory { //Load on servlet initialization
                 chain = permissionChecker.chain(manager);
                 break;
             }
+            case GET_DELIVERIES: {
+                CommandHandler manager = DeliveryManager.getInstance();
+                chain = manager;
+                break;
+            }
             case REQUEST_DELIVERY: {
                 CommandHandler manager = DeliveryManager.getInstance();
                 chain = permissionChecker.chain(manager);

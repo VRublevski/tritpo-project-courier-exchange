@@ -3,6 +3,7 @@ package by.bsuir.exchange.manager;
 import by.bsuir.exchange.bean.DeliveryBean;
 import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
+import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
@@ -10,9 +11,17 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.DeliverySqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
+import by.bsuir.exchange.repository.specification.DeliveryByClientIdSpecification;
+import by.bsuir.exchange.repository.specification.DeliveryByCourierIdSpecification;
+import by.bsuir.exchange.repository.specification.Specification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class DeliveryManager implements CommandHandler {
     private static DeliveryManager instance;
@@ -45,11 +54,35 @@ public class DeliveryManager implements CommandHandler {
                 status = requestDelivery(request);
                 break;
             }
+            case GET_DELIVERIES: {
+                status = getDeliveries(request);
+                break;
+            }
             default: {
                 throw new ManagerOperationException("Unexpected command");
             }
         }
         return status;
+    }
+
+    private boolean getDeliveries(HttpServletRequest request) throws ManagerOperationException {
+        HttpSession session = request.getSession();
+        RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
+        long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
+        Specification<DeliveryBean, PreparedStatement, Connection> specification = role == RoleEnum.CLIENT ?
+                                                new DeliveryByClientIdSpecification(id) :
+                                                new DeliveryByCourierIdSpecification(id);
+        List<DeliveryBean > deliveries = Collections.emptyList();
+        try {
+            Optional< List< DeliveryBean > > optionalCouriers = repository.find(specification);
+            if (optionalCouriers.isPresent()){
+                deliveries = optionalCouriers.get();
+            }
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
+        }
+        request.setAttribute("lst", deliveries);
+        return true;
     }
 
     private boolean requestDelivery(HttpServletRequest request) throws ManagerOperationException {

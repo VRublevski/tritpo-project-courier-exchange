@@ -81,6 +81,10 @@ public class DataBaseAttributesProvider {
                 columnNames = courierColumns;
                 break;
             }
+            case DELIVERY_TABLE: {
+                columnNames = deliveryColumns;
+                break;
+            }
         }
         String column = columnNames.get(columnName);
         String key = String.format("%s.%s", tableName, column);

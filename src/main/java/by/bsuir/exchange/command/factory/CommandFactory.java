@@ -45,6 +45,9 @@ public class CommandFactory {
 
         successPages[CommandEnum.REQUEST_DELIVERY.ordinal()] = ConfigurationProvider.getProperty(COURIER_PAGE_PATH);
         failurePages[CommandEnum.REQUEST_DELIVERY.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
+
+        successPages[CommandEnum.GET_DELIVERIES.ordinal()] = ConfigurationProvider.getProperty(DELIVERIES_PAGE_PATH);
+        failurePages[CommandEnum.GET_DELIVERIES.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
     }
 
     public static Command getCommand(HttpServletRequest request) throws CommandInitializationException {
