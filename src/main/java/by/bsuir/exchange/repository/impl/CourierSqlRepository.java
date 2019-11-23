@@ -79,4 +79,9 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
             throw new RepositoryOperationException(e);
         }
     }
+
+    @Override
+    public void update(CourierBean entity) {
+        throw new UnsupportedOperationException();
+    }
 }

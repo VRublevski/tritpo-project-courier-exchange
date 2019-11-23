@@ -11,6 +11,7 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.DeliverySqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
+import by.bsuir.exchange.repository.specification.DeliveryByActorIdSpecification;
 import by.bsuir.exchange.repository.specification.DeliveryByClientIdSpecification;
 import by.bsuir.exchange.repository.specification.DeliveryByCourierIdSpecification;
 import by.bsuir.exchange.repository.specification.Specification;
@@ -58,6 +59,10 @@ public class DeliveryManager implements CommandHandler {
                 status = getDeliveries(request);
                 break;
             }
+            case FINISH_DELIVERY: {
+                status = finishDelivery(request);
+                break;
+            }
             default: {
                 throw new ManagerOperationException("Unexpected command");
             }
@@ -74,9 +79,9 @@ public class DeliveryManager implements CommandHandler {
                                                 new DeliveryByCourierIdSpecification(id);
         List<DeliveryBean > deliveries = Collections.emptyList();
         try {
-            Optional< List< DeliveryBean > > optionalCouriers = repository.find(specification);
-            if (optionalCouriers.isPresent()){
-                deliveries = optionalCouriers.get();
+            Optional< List< DeliveryBean > > optionalDeliveries = repository.find(specification);
+            if (optionalDeliveries.isPresent()){
+                deliveries = optionalDeliveries.get();
             }
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
@@ -95,6 +100,40 @@ public class DeliveryManager implements CommandHandler {
         try {
             repository.add(delivery);
             status = true;
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
+        }
+        return status;
+    }
+
+    private boolean finishDelivery(HttpServletRequest request) throws ManagerOperationException {
+        HttpSession session = request.getSession();
+        RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
+        long firstId = (long) session.getAttribute(SessionAttributesNameProvider.ID);
+        String secondIdString = request.getParameter("delivery");
+        long secondId = Long.parseLong(secondIdString);
+        if (role == RoleEnum.COURIER){
+            long tmp = firstId + secondId;
+            firstId = tmp - firstId;
+            secondId = tmp - firstId;
+        }
+        DeliveryByActorIdSpecification specification = new DeliveryByActorIdSpecification(firstId, secondId);
+        DeliveryBean delivery;
+        boolean status;
+        try {
+            Optional< List< DeliveryBean > > optionalDeliveries = repository.find(specification);
+            if (optionalDeliveries.isPresent()){
+                delivery = optionalDeliveries.get().get(0);
+                if (role == RoleEnum.CLIENT) {
+                    delivery.setClientFinished(true);
+                } else {
+                    delivery.setCourierFinished(true);
+                }
+                repository.update(delivery);
+                status = true;
+            }else{
+                status = false;
+            }
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }

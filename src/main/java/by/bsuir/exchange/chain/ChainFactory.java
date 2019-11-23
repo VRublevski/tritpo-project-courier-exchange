@@ -6,10 +6,7 @@ import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.logic.PermissionChecker;
-import by.bsuir.exchange.manager.ClientManager;
-import by.bsuir.exchange.manager.CourierManager;
-import by.bsuir.exchange.manager.DeliveryManager;
-import by.bsuir.exchange.manager.HttpSessionManager;
+import by.bsuir.exchange.manager.*;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
@@ -77,14 +74,23 @@ public class ChainFactory { //Load on servlet initialization
                 chain = permissionChecker.chain(manager);
                 break;
             }
-            case GET_DELIVERIES: {
+            case GET_DELIVERIES: {  //FIXME check for permissions
                 CommandHandler manager = DeliveryManager.getInstance();
                 chain = manager;
+                break;
+            }
+            case GET_IMAGE: {
+                chain = ImageManager.getInstance();
                 break;
             }
             case REQUEST_DELIVERY: {
                 CommandHandler manager = DeliveryManager.getInstance();
                 chain = permissionChecker.chain(manager);
+                break;
+            }
+            case FINISH_DELIVERY: {
+                CommandHandler manager = DeliveryManager.getInstance();
+                chain = manager;
                 break;
             }
             default:{

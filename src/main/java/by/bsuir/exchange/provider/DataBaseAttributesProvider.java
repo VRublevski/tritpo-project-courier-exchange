@@ -12,6 +12,7 @@ public class DataBaseAttributesProvider {
     private static final Map<String, String > clientColumns = new HashMap<>();
     private static final Map<String, String > courierColumns = new HashMap<>();
     private static final Map<String, String > deliveryColumns = new HashMap<>();
+    private static final Map<String, String > imagesColumns = new HashMap<>();
 
     public static final String DRIVER_NAME = "DRIVER_NAME";
     public static final String DATABASE_URL = "DATABASE_URL";
@@ -35,6 +36,10 @@ public class DataBaseAttributesProvider {
     public static final String CLIENT_FINISHED = "CLIENT_FINISHED";
     public static final String COURIER_ID = "COURIER_ID";
     public static final String COURIER_FINISHED = "COURIER_FINISHED";
+
+    public static final String IMAGES_TABLE = "images";
+    public static final String ROLE_ID = "ROLE_ID";
+    public static final String FILE_NAME = "FILE_NAME";
 
     //FIXME why one should do this???
     static {
@@ -60,6 +65,11 @@ public class DataBaseAttributesProvider {
         deliveryColumns.put(CLIENT_FINISHED, "clientFinished");
         deliveryColumns.put(COURIER_ID, "courierId");
         deliveryColumns.put(COURIER_FINISHED, "courierFinished");
+
+        imagesColumns.put(ID, "id");
+        imagesColumns.put(ROLE, "role");
+        imagesColumns.put(ROLE_ID, "role_id");
+        imagesColumns.put(FILE_NAME, "file_name");
     }
 
     public static String getProperty(String name){
@@ -79,6 +89,10 @@ public class DataBaseAttributesProvider {
             }
             case COURIER_TABLE : {
                 columnNames = courierColumns;
+                break;
+            }
+            case IMAGES_TABLE: {
+                columnNames = imagesColumns;
                 break;
             }
             case DELIVERY_TABLE: {

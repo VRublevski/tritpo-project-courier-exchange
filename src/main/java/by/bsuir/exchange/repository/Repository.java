@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface Repository<T, R, H> {
     void add(T entity) throws RepositoryOperationException;
     Optional< List<T> > find(Specification<T, R, H> specification) throws RepositoryOperationException;
+    void update(T entity) throws RepositoryOperationException;
 }

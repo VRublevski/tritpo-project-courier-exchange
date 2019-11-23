@@ -5,7 +5,9 @@ public enum CommandEnum {
     REGISTER,
     GET_COURIERS,
     GET_DELIVERIES,
+    GET_IMAGE,
     REQUEST_DELIVERY,
+    FINISH_DELIVERY,
     SET_LOCALE,
     EMPTY
 }

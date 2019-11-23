@@ -74,4 +74,9 @@ public class ClientSqlRepository extends SqlRepository<ClientBean> {
             throw new RepositoryOperationException(e);
         }
     }
+
+    @Override
+    public void update(ClientBean entity) {
+        throw new UnsupportedOperationException();
+    }
 }

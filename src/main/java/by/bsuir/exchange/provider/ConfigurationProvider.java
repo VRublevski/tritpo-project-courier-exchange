@@ -14,6 +14,10 @@ public class ConfigurationProvider{
     public static final String ERROR_PAGE_PATH = "ERROR_PAGE_PATH";
     public static final String HOME_PAGE_PATH = "HOME_PAGE_PATH";
 
+    public static final String IMAGE_PATH = "IMAGE_PATH";
+    public static final String GET_IMAGE_PATH = "GET_IMAGE_PATH";
+    public static final String UPLOAD_IMAGE_PATH = "UPLOAD_IMAGE_PATH";
+
     public static String getProperty(String name){
         return resourceBundle.getString(name);
     }

@@ -73,4 +73,9 @@ public class UserSqlRepository extends SqlRepository<UserBean> {
             throw new RepositoryOperationException(e);
         }
     }
+
+    @Override
+    public void update(UserBean entity) {
+        throw new UnsupportedOperationException();
+    }
 }
