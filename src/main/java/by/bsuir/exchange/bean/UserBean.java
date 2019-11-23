@@ -1,6 +1,6 @@
 package by.bsuir.exchange.bean;
 
-public class UserBean {
+public class UserBean implements Markable{
     private long id;
     private String email;
     private String password;

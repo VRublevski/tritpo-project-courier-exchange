@@ -1,7 +1,7 @@
 package by.bsuir.exchange.repository;
 
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
-import by.bsuir.exchange.repository.specification.Specification;
+import by.bsuir.exchange.specification.Specification;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,12 +1,13 @@
-package by.bsuir.exchange.repository.specification;
+package by.bsuir.exchange.specification.user;
 
 import by.bsuir.exchange.bean.UserBean;
+import by.bsuir.exchange.specification.Specification;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class UserByEmailSqlSpecification implements Specification<UserBean, PreparedStatement, Connection>{
+public class UserByEmailSqlSpecification implements Specification<UserBean, PreparedStatement, Connection> {
     private final static String LOGIN_QUERY = "SELECT * FROM users WHERE email = ?";
 
     private String email;

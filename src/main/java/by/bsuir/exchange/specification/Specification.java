@@ -1,4 +1,4 @@
-package by.bsuir.exchange.repository.specification;
+package by.bsuir.exchange.specification;
 
 public interface Specification<T, R, H> {
     boolean specify(T entity);

@@ -1,6 +1,6 @@
 package by.bsuir.exchange.bean;
 
-public class DeliveryBean {
+public class DeliveryBean implements Markable{
     private long id;
     private long clientId;
     private boolean clientFinished;

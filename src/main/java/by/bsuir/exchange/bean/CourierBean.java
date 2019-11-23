@@ -1,6 +1,6 @@
 package by.bsuir.exchange.bean;
 
-public class CourierBean {
+public class CourierBean implements Markable{
     private long id;
     private String name;
     private String surname;

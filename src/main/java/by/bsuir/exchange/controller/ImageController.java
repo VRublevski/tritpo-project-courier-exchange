@@ -10,8 +10,8 @@ import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.ImageSqlRepository;
-import by.bsuir.exchange.repository.specification.ImageByRoleIdSpecification;
-import by.bsuir.exchange.repository.specification.Specification;
+import by.bsuir.exchange.specification.image.ImageByRoleIdSpecification;
+import by.bsuir.exchange.specification.Specification;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;

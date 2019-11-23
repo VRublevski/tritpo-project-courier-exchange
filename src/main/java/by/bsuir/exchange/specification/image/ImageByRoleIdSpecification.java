@@ -1,6 +1,7 @@
-package by.bsuir.exchange.repository.specification;
+package by.bsuir.exchange.specification.image;
 
 import by.bsuir.exchange.bean.ImageBean;
+import by.bsuir.exchange.specification.Specification;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

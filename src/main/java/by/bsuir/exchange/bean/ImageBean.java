@@ -1,6 +1,6 @@
 package by.bsuir.exchange.bean;
 
-public class ImageBean {
+public class ImageBean implements Markable{
     private long id;
     private String role;
     private long roleId;

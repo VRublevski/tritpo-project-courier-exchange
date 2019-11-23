@@ -13,10 +13,10 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.CourierSqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
-import by.bsuir.exchange.repository.specification.CourierAllSpecification;
-import by.bsuir.exchange.repository.specification.CourierByIdSpecification;
-import by.bsuir.exchange.repository.specification.CourierByUserIdSpecification;
-import by.bsuir.exchange.repository.specification.Specification;
+import by.bsuir.exchange.specification.courier.CourierAllSpecification;
+import by.bsuir.exchange.specification.courier.CourierByIdSpecification;
+import by.bsuir.exchange.specification.courier.CourierByUserIdSpecification;
+import by.bsuir.exchange.specification.Specification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

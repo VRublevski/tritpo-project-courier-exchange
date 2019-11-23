@@ -12,8 +12,8 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.SqlRepository;
 import by.bsuir.exchange.repository.impl.UserSqlRepository;
-import by.bsuir.exchange.repository.specification.Specification;
-import by.bsuir.exchange.repository.specification.UserByEmailSqlSpecification;
+import by.bsuir.exchange.specification.Specification;
+import by.bsuir.exchange.specification.user.UserByEmailSqlSpecification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

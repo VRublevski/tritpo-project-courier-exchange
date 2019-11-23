@@ -1,22 +1,23 @@
-package by.bsuir.exchange.repository.specification;
+package by.bsuir.exchange.specification.client;
 
-import by.bsuir.exchange.bean.CourierBean;
+import by.bsuir.exchange.bean.ClientBean;
+import by.bsuir.exchange.specification.Specification;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-public class CourierByIdSpecification implements Specification<CourierBean, PreparedStatement, Connection> {
-    private final static String QUERY = "SELECT * FROM couriers WHERE id = ?";
+public class ClientByIdSpecification implements Specification<ClientBean, PreparedStatement, Connection> {
+    private final static String QUERY = "SELECT * FROM clients WHERE id = ?";
 
     private Connection connection;
     private long id;
 
-    public CourierByIdSpecification(long id) {
+    public ClientByIdSpecification(long id) {
         this.id = id;
     }
 
     @Override
-    public boolean specify(CourierBean entity) {
+    public boolean specify(ClientBean entity) {
         return id == entity.getId();
     }
 

@@ -1,11 +1,12 @@
-package by.bsuir.exchange.repository.specification;
+package by.bsuir.exchange.specification.courier;
 
 import by.bsuir.exchange.bean.CourierBean;
+import by.bsuir.exchange.specification.Specification;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-public class CourierByUserIdSpecification implements Specification<CourierBean, PreparedStatement, Connection>{
+public class CourierByUserIdSpecification implements Specification<CourierBean, PreparedStatement, Connection> {
     private final static String QUERY = "SELECT * FROM couriers WHERE user_id = ?";
 
     private Connection connection;

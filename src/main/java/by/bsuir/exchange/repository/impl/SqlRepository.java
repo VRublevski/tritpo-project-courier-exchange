@@ -5,7 +5,7 @@ import by.bsuir.exchange.pool.exception.PoolInitializationException;
 import by.bsuir.exchange.repository.Repository;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
-import by.bsuir.exchange.repository.specification.Specification;
+import by.bsuir.exchange.specification.Specification;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

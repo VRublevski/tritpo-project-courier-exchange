@@ -7,7 +7,6 @@ import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
-import by.bsuir.exchange.repository.specification.Specification;
 
 import java.sql.*;
 import java.util.LinkedList;

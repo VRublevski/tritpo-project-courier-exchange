@@ -1,6 +1,7 @@
-package by.bsuir.exchange.repository.specification;
+package by.bsuir.exchange.specification.courier;
 
 import by.bsuir.exchange.bean.CourierBean;
+import by.bsuir.exchange.specification.Specification;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,6 +1,6 @@
 package by.bsuir.exchange.bean;
 
-public class ClientBean {
+public class ClientBean implements Markable{
     private long id;
     private String name;
     private String surname;
