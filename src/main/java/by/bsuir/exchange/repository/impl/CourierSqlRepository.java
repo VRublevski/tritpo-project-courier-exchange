@@ -81,7 +81,21 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
     }
 
     @Override
-    public void update(CourierBean entity) {
-        throw new UnsupportedOperationException();
+    public void update(CourierBean courier) throws RepositoryOperationException {
+        String template = "UPDATE couriers SET name=?, surname=?, transport=? WHERE id=?";
+        try {
+            ConnectionPool pool = ConnectionPool.getInstance();
+            Connection connection = pool.getConnection();
+
+            PreparedStatement statement = connection.prepareStatement(template);
+            statement.setString(1, courier.getName());
+            statement.setString(2, courier.getSurname());
+            statement.setString(3, courier.getTransport());
+            statement.setLong(4, courier.getId());
+            statement.executeUpdate();
+            pool.releaseConnection(connection);
+        }catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+            throw new RepositoryOperationException(e);
+        }
     }
 }

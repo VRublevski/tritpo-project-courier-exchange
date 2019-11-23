@@ -39,9 +39,10 @@ public class ChainFactory { //Load on servlet initialization
 
     /*Permissions checkers*/
     private static CommandHandler permissionChecker;
+    private static CommandHandler isCourier;
 
     static {
-        initPermissionCheckers();
+        initCheckers();
         initValidators();
         try {
             initBranches();     //FIXME
@@ -56,13 +57,16 @@ public class ChainFactory { //Load on servlet initialization
         switch (command){
             case LOGIN:
             case REGISTER: {
-                CommandHandler isCourier = (request, command1) -> {
-                    HttpSession session = request.getSession();
-                    RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
-                    return role == RoleEnum.COURIER;
-                };
                 CommandHandler branch = clientBranch.branch(isCourier, courierBranch);
                 chain = permissionChecker.chain(sessionBranch).chain(branch);
+                break;
+            }
+            case UPDATE_PROFILE_CLIENT: {
+                chain = permissionChecker.chain(clientBranch);
+                break;
+            }
+            case UPDATE_PROFILE_COURIER: {
+                chain = permissionChecker.chain(courierBranch);
                 break;
             }
             case SET_LOCALE:{
@@ -80,7 +84,7 @@ public class ChainFactory { //Load on servlet initialization
                 break;
             }
             case GET_IMAGE: {
-                chain = ImageManager.getInstance();
+                chain = permissionChecker;
                 break;
             }
             case REQUEST_DELIVERY: {
@@ -134,12 +138,18 @@ public class ChainFactory { //Load on servlet initialization
         };
     }
 
-    private static void initPermissionCheckers(){
+    private static void initCheckers(){
         permissionChecker = (request, command) -> {
             String attribute = SessionAttributesNameProvider.ROLE;
             HttpSession session = request.getSession();
             RoleEnum role = (RoleEnum) session.getAttribute(attribute);
             return PermissionChecker.getInstance().checkPermission(role, command);
+        };
+
+        isCourier = (request, command1) -> {
+            HttpSession session = request.getSession();
+            RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
+            return role == RoleEnum.COURIER;
         };
     }
 

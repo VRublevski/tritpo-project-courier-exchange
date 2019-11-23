@@ -17,7 +17,7 @@ import static by.bsuir.exchange.provider.ConfigurationProvider.*;
 
 public class CommandFactory {
     private static final String COMMAND = "command";
-    private static final int N_COMMANDS = 8;
+    private static final int N_COMMANDS = 10;
 
     private static Map<String, String> pageConstants;
 
@@ -34,11 +34,17 @@ public class CommandFactory {
         successPages = new String[N_COMMANDS];
         failurePages = new String[N_COMMANDS];
 
-        successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(HOME_PAGE_PATH);
+        successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
         failurePages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(LOGIN_PAGE_PATH);
 
-        successPages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(HOME_PAGE_PATH);
+        successPages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
         failurePages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(REGISTER_PAGE_PATH);
+
+        successPages[CommandEnum.UPDATE_PROFILE_CLIENT.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
+        failurePages[CommandEnum.UPDATE_PROFILE_CLIENT.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
+
+        successPages[CommandEnum.UPDATE_PROFILE_COURIER.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
+        failurePages[CommandEnum.UPDATE_PROFILE_COURIER.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
 
         successPages[CommandEnum.GET_COURIERS.ordinal()] = ConfigurationProvider.getProperty(COURIER_PAGE_PATH);
         failurePages[CommandEnum.GET_COURIERS.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
@@ -78,6 +84,10 @@ public class CommandFactory {
             String pageProperty = ConfigurationProvider.getProperty(pagePropertyName);
             successPage = pageProperty;
             failurePage = pageProperty;
+        }else if(isContentRelated(commandEnum)){
+            successPage = "/content";
+            request.setAttribute("page", successPages[commandEnum.ordinal()]);
+            failurePage = failurePages[commandEnum.ordinal()];
         }else{
             successPage = successPages[commandEnum.ordinal()];
             failurePage = failurePages[commandEnum.ordinal()];
@@ -87,5 +97,10 @@ public class CommandFactory {
 
     private static boolean isSamePage(CommandEnum command){
         return command == CommandEnum.SET_LOCALE;
+    }
+
+    private static boolean isContentRelated(CommandEnum command){
+        return command == CommandEnum.GET_IMAGE || command == CommandEnum.UPDATE_PROFILE_COURIER ||
+                command == CommandEnum.UPDATE_PROFILE_CLIENT;
     }
 }

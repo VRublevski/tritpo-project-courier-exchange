@@ -13,6 +13,7 @@ import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.CourierSqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
 import by.bsuir.exchange.repository.specification.CourierAllSpecification;
+import by.bsuir.exchange.repository.specification.CourierByIdSpecification;
 import by.bsuir.exchange.repository.specification.CourierByUserIdSpecification;
 import by.bsuir.exchange.repository.specification.Specification;
 
@@ -59,6 +60,10 @@ public class CourierManager implements CommandHandler {
                 status = login(request);
                 break;
             }
+            case UPDATE_PROFILE_COURIER: {
+                status = updateProfile(request);
+                break;
+            }
             case GET_COURIERS:{
                 status = getCouriers(request);
                 break;
@@ -66,6 +71,38 @@ public class CourierManager implements CommandHandler {
             default: {
                 throw new ManagerOperationException("Unexpected command");
             }
+        }
+        return status;
+    }
+
+    private boolean updateProfile(HttpServletRequest request) throws ManagerOperationException {
+        CourierBean courier = (CourierBean) request.getAttribute(PageAttributesNameProvider.COURIER_ATTRIBUTE);
+        HttpSession session = request.getSession();
+        long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
+        courier.setId(id);
+        boolean status;
+        try {
+            Specification<CourierBean, PreparedStatement, Connection> courierByIdSpecification = new CourierByIdSpecification(id);
+            Optional< List<CourierBean> >  optionalCouriers = courierRepository.find(courierByIdSpecification);
+            if (optionalCouriers.isPresent()){
+                CourierBean courierFound = optionalCouriers.get().get(0);
+                if (courier.getName().isEmpty()){
+                    courier.setName(courierFound.getName());
+                }
+                if (courier.getSurname().isEmpty()){
+                    courier.setSurname(courierFound.getSurname());
+                }
+                if (courier.getTransport().isEmpty()){
+                    courier.setTransport(courierFound.getTransport());
+                }
+                courierRepository.update(courier);
+                request.setAttribute(PageAttributesNameProvider.COURIER_ATTRIBUTE, courier);
+                status = true;
+            }else{
+                status = false;
+            }
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
         }
         return status;
     }

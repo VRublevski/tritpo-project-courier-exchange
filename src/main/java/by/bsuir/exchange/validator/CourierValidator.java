@@ -11,10 +11,10 @@ public class CourierValidator {
 
     public static boolean validate(CourierBean courierBean){
         boolean isValid = true;
-        if (courierBean.getName() != null){
+        if (courierBean.getName() != null && !courierBean.getName().isEmpty()){
             isValid &= validateName(courierBean);
         }
-        if (courierBean.getSurname() != null){
+        if (courierBean.getSurname() != null && !courierBean.getSurname().isEmpty()){
             isValid &= validateSurname(courierBean);
         }
         return isValid;

@@ -3,7 +3,7 @@ package by.bsuir.exchange.provider;
 
 import java.util.ResourceBundle;
 
-public class ConfigurationProvider{
+public class ConfigurationProvider{ //FIXME redirect
     private static final String BUNDLE_NAME = "config";
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
     public static final String LOGIN_PAGE_PATH = "LOGIN_PAGE_PATH";
@@ -12,7 +12,7 @@ public class ConfigurationProvider{
     public static final String COURIER_PAGE_PATH = "COURIER_PAGE_PATH";
     public static final String CABINET_PAGE_PATH = "CABINET_PAGE_PATH";
     public static final String ERROR_PAGE_PATH = "ERROR_PAGE_PATH";
-    public static final String HOME_PAGE_PATH = "HOME_PAGE_PATH";
+    public static final String EDIT_PROFILE_PAGE_PATH = "HOME_PAGE_PATH";
 
     public static final String IMAGE_PATH = "IMAGE_PATH";
     public static final String GET_IMAGE_PATH = "GET_IMAGE_PATH";

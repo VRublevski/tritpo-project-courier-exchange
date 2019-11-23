@@ -1,15 +1,15 @@
 package by.bsuir.exchange.repository.impl;
 
 import by.bsuir.exchange.bean.ImageBean;
+import by.bsuir.exchange.pool.ConnectionPool;
+import by.bsuir.exchange.pool.exception.PoolInitializationException;
+import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.specification.Specification;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +54,26 @@ public class ImageSqlRepository extends SqlRepository<ImageBean> {
 
     @Override
     public void add(ImageBean entity) throws RepositoryOperationException {
-        throw new UnsupportedOperationException();
+        String template = "INSERT INTO images (role, role_id, file_name) VALUES (?, ?, ?)";
+        try{
+            ConnectionPool pool = ConnectionPool.getInstance();
+            Connection connection = pool.getConnection();
+            PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, entity.getRole().toUpperCase());
+            statement.setLong(2, entity.getRoleId());
+            statement.setString(3, entity.getFileName());
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0){
+                throw new RepositoryOperationException("Unable to perform operation");
+            }
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()){
+                entity.setId(generatedKeys.getLong(1));
+            }
+            pool.releaseConnection(connection);
+        } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+            throw new RepositoryOperationException(e);
+        }
     }
 
     @Override
