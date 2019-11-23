@@ -4,6 +4,8 @@ package by.bsuir.exchange.controller;
 import by.bsuir.exchange.bean.ImageBean;
 import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.provider.ConfigurationProvider;
+import by.bsuir.exchange.provider.PageAttributesNameProvider;
+import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
@@ -48,8 +50,8 @@ public class ImageController extends HttpServlet implements Servlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String role = request.getParameter("role");
-        String roleIdString = request.getParameter("role_id");
+        String role = request.getParameter(PageAttributesNameProvider.ROLE);
+        String roleIdString = request.getParameter(PageAttributesNameProvider.ROLE_ID);
         long roleId = Long.parseLong(roleIdString);
         Specification<ImageBean, PreparedStatement, Connection> specification = new ImageByRoleIdSpecification(role, roleId);
 
@@ -59,7 +61,6 @@ public class ImageController extends HttpServlet implements Servlet {
             String fileName;
             if (imagesOptional.isPresent()){
                 ImageBean image = imagesOptional.get().get(0);
-                request.setAttribute("avatar", image);
                 fileName = image.getFileName();
                 String baseDir = ConfigurationProvider.getProperty(ConfigurationProvider.IMAGE_PATH);
                 String roleDir = image.getRole();
@@ -87,7 +88,7 @@ public class ImageController extends HttpServlet implements Servlet {
 
         long roleId = (long) session.getAttribute(SessionAttributesNameProvider.ID);
 
-        Part filePart = request.getPart("avatar");
+        Part filePart = request.getPart(PageAttributesNameProvider.AVATAR);
         String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
         ImageBean imageBean = new ImageBean();
@@ -113,7 +114,7 @@ public class ImageController extends HttpServlet implements Servlet {
 
         Files.copy(fileContent, path);
 
-        String page = (String) request.getAttribute("page");
+        String page = (String) request.getAttribute(RequestAttributesNameProvider.PAGE);
 
         RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(page);
         dispatcher.forward(request, response);

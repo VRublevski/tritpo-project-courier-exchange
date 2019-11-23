@@ -7,6 +7,7 @@ import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
+import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
@@ -159,7 +160,7 @@ public class CourierManager implements CommandHandler {
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }
-        request.setAttribute("lst", couriers);
+        request.setAttribute(RequestAttributesNameProvider.LIST, couriers);
         return true;
     }
 

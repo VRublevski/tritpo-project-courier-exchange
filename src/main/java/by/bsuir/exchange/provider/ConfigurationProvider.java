@@ -15,6 +15,7 @@ public class ConfigurationProvider{ //FIXME redirect
     public static final String EDIT_PROFILE_PAGE_PATH = "HOME_PAGE_PATH";
 
     public static final String IMAGE_PATH = "IMAGE_PATH";
+    public static final String IMAGE_SERVLET = "IMAGE_SERVLET";
     public static final String GET_IMAGE_PATH = "GET_IMAGE_PATH";
     public static final String UPLOAD_IMAGE_PATH = "UPLOAD_IMAGE_PATH";
 

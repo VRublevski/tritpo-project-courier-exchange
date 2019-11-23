@@ -7,6 +7,8 @@ import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.command.exception.CommandInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.ConfigurationProvider;
+import by.bsuir.exchange.provider.PageAttributesNameProvider;
+import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,9 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static by.bsuir.exchange.provider.ConfigurationProvider.*;
+import static by.bsuir.exchange.provider.PageAttributesNameProvider.COMMAND;
 
 public class CommandFactory {
-    private static final String COMMAND = "command";
     private static final int N_COMMANDS = 10;
 
     private static Map<String, String> pageConstants;
@@ -79,14 +81,14 @@ public class CommandFactory {
         String successPage;
         String failurePage;
         if (isSamePage(commandEnum)){
-            String pageParameter = request.getParameter("page");
+            String pageParameter = request.getParameter(PageAttributesNameProvider.PAGE);
             String pagePropertyName = pageConstants.get(pageParameter);
             String pageProperty = ConfigurationProvider.getProperty(pagePropertyName);
             successPage = pageProperty;
             failurePage = pageProperty;
         }else if(isContentRelated(commandEnum)){
-            successPage = "/content";
-            request.setAttribute("page", successPages[commandEnum.ordinal()]);
+            successPage = IMAGE_SERVLET;
+            request.setAttribute(RequestAttributesNameProvider.PAGE, successPages[commandEnum.ordinal()]);
             failurePage = failurePages[commandEnum.ordinal()];
         }else{
             successPage = successPages[commandEnum.ordinal()];

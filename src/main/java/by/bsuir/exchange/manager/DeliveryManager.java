@@ -6,6 +6,7 @@ import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
+import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
@@ -86,7 +87,7 @@ public class DeliveryManager implements CommandHandler {
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }
-        request.setAttribute("lst", deliveries);
+        request.setAttribute(RequestAttributesNameProvider.LIST, deliveries);
         return true;
     }
 
