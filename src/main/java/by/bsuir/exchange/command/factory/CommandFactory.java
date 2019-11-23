@@ -87,7 +87,7 @@ public class CommandFactory {
             successPage = pageProperty;
             failurePage = pageProperty;
         }else if(isContentRelated(commandEnum)){
-            successPage = IMAGE_SERVLET;
+            successPage = ConfigurationProvider.getProperty(IMAGE_SERVLET);
             request.setAttribute(RequestAttributesNameProvider.PAGE, successPages[commandEnum.ordinal()]);
             failurePage = failurePages[commandEnum.ordinal()];
         }else{
