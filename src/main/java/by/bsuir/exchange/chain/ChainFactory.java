@@ -5,7 +5,7 @@ import by.bsuir.exchange.bean.CourierBean;
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
-import by.bsuir.exchange.logic.PermissionChecker;
+import by.bsuir.exchange.checker.PermissionChecker;
 import by.bsuir.exchange.manager.*;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;

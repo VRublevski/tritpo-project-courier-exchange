@@ -1,4 +1,4 @@
-package by.bsuir.exchange.logic;
+package by.bsuir.exchange.checker;
 
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.PermissionEnum;
