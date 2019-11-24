@@ -1,7 +1,6 @@
 package by.bsuir.exchange.chain;
 
-import by.bsuir.exchange.bean.ClientBean;
-import by.bsuir.exchange.bean.CourierBean;
+import by.bsuir.exchange.bean.ActorBean;
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
@@ -10,8 +9,7 @@ import by.bsuir.exchange.manager.*;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
-import by.bsuir.exchange.validator.ClientValidator;
-import by.bsuir.exchange.validator.CourierValidator;
+import by.bsuir.exchange.validator.ActorValidator;
 import by.bsuir.exchange.validator.UserValidator;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -25,17 +23,14 @@ public class ChainFactory { //Load on servlet initialization
     private static CommandHandler emptyChain;
 
     private static CommandHandler sessionBranch;
-    private static CommandHandler clientBranch;
-    private static CommandHandler courierBranch;
+    private static CommandHandler actorBranch;
 
     /*Managers*/
-
     /*BeanCreators*/
 
     /*Validators*/
     private static CommandHandler userBeanValidator;
-    private static CommandHandler clientBeanValidator;
-    private static CommandHandler courierBeanValidator;
+    private static CommandHandler actorBeanValidator;
 
     /*Permissions checkers*/
     private static CommandHandler permissionChecker;
@@ -57,16 +52,12 @@ public class ChainFactory { //Load on servlet initialization
         switch (command){
             case LOGIN:
             case REGISTER: {
-                CommandHandler branch = clientBranch.branch(isCourier, courierBranch);
-                chain = permissionChecker.chain(sessionBranch).chain(branch);
+                chain = permissionChecker.chain(sessionBranch).chain(actorBranch);
                 break;
             }
+            case UPDATE_PROFILE_COURIER:
             case UPDATE_PROFILE_CLIENT: {
-                chain = permissionChecker.chain(clientBranch);
-                break;
-            }
-            case UPDATE_PROFILE_COURIER: {
-                chain = permissionChecker.chain(courierBranch);
+                chain = permissionChecker.chain(actorBranch);
                 break;
             }
             case SET_LOCALE:{
@@ -74,7 +65,7 @@ public class ChainFactory { //Load on servlet initialization
                 break;
             }
             case GET_COURIERS: {
-                CommandHandler manager = CourierManager.getInstance();
+                CommandHandler manager = ActorManager.getInstance();
                 chain = permissionChecker.chain(manager);
                 break;
             }
@@ -125,16 +116,10 @@ public class ChainFactory { //Load on servlet initialization
             return UserValidator.validate(bean);
         };
 
-        clientBeanValidator = (request, command) -> {
+        actorBeanValidator = (request, command) -> {
             String attribute = PageAttributesNameProvider.CLIENT_ATTRIBUTE;
-            ClientBean bean = (ClientBean) request.getAttribute(attribute);
-            return ClientValidator.validate(bean);
-        };
-
-        courierBeanValidator = (request, command) -> {
-            String attribute = PageAttributesNameProvider.COURIER_ATTRIBUTE;
-            CourierBean bean = (CourierBean) request.getAttribute(attribute);
-            return CourierValidator.validate(bean);
+            ActorBean bean = (ActorBean) request.getAttribute(attribute);
+            return ActorValidator.validate(bean);
         };
     }
 
@@ -168,30 +153,19 @@ public class ChainFactory { //Load on servlet initialization
         sessionBranch = beanCreator.chain(userBeanValidator).chain(manager);
     }
 
-    private static void initClientBranch() throws ManagerInitializationException {
+    private static void initActorBranch() throws ManagerInitializationException {
         String attribute = PageAttributesNameProvider.CLIENT_ATTRIBUTE;
         CommandHandler beanCreator = (request, command) -> {
-            ClientBean user = new ClientBean();
+            ActorBean user = new ActorBean();
             return getBeanCreator(user, attribute).handle(request, command);
         };
-        ClientManager manager = ClientManager.getInstance();
-        clientBranch = beanCreator.chain(clientBeanValidator).chain(manager);
-    }
-
-    private static void initCourierBranch() throws ManagerInitializationException {
-        String attribute = PageAttributesNameProvider.COURIER_ATTRIBUTE;
-        CommandHandler beanCreator = (request, command) -> {
-            CourierBean user = new CourierBean();
-            return getBeanCreator(user, attribute).handle(request, command);
-        };
-        CourierManager manager = CourierManager.getInstance();
-        courierBranch = beanCreator.chain(courierBeanValidator).chain(manager);
+        ActorManager manager = ActorManager.getInstance();
+        actorBranch = beanCreator.chain(actorBeanValidator).chain(manager);
     }
 
 
     private static void initBranches() throws ManagerInitializationException {
         initSessionBranch();
-        initClientBranch();
-        initCourierBranch();
+        initActorBranch();
     }
 }

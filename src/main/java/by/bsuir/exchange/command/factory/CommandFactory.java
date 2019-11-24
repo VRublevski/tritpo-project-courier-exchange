@@ -19,7 +19,7 @@ import static by.bsuir.exchange.provider.ConfigurationProvider.*;
 import static by.bsuir.exchange.provider.PageAttributesNameProvider.COMMAND;
 
 public class CommandFactory {
-    private static final int N_COMMANDS = 10;
+    private static final int N_COMMANDS = 9;
 
     private static Map<String, String> pageConstants;
 
@@ -36,17 +36,17 @@ public class CommandFactory {
         successPages = new String[N_COMMANDS];
         failurePages = new String[N_COMMANDS];
 
-        successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(EDIT_PROFILE_PAGE_PATH);
+        successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
         failurePages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(LOGIN_PAGE_PATH);
 
         successPages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(EDIT_PROFILE_PAGE_PATH);
         failurePages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(REGISTER_PAGE_PATH);
 
-        successPages[CommandEnum.UPDATE_PROFILE_CLIENT.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
-        failurePages[CommandEnum.UPDATE_PROFILE_CLIENT.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
-
         successPages[CommandEnum.UPDATE_PROFILE_COURIER.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
         failurePages[CommandEnum.UPDATE_PROFILE_COURIER.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
+
+        successPages[CommandEnum.UPDATE_PROFILE_CLIENT.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
+        failurePages[CommandEnum.UPDATE_PROFILE_CLIENT.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
 
         successPages[CommandEnum.GET_COURIERS.ordinal()] = ConfigurationProvider.getProperty(COURIER_PAGE_PATH);
         failurePages[CommandEnum.GET_COURIERS.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
@@ -102,7 +102,6 @@ public class CommandFactory {
     }
 
     private static boolean isContentRelated(CommandEnum command){
-        return command == CommandEnum.GET_IMAGE || command == CommandEnum.UPDATE_PROFILE_COURIER ||
-                command == CommandEnum.UPDATE_PROFILE_CLIENT;
+        return command == CommandEnum.GET_IMAGE || command == CommandEnum.UPDATE_PROFILE_CLIENT || command == CommandEnum.UPDATE_PROFILE_COURIER;
     }
 }

@@ -1,16 +1,16 @@
 package by.bsuir.exchange.bean;
 
-public class ClientBean implements Markable{
+public class ActorBean implements Markable{
     private long id;
     private String name;
     private String surname;
     private double balance;
     private long userId;
 
-    public ClientBean() {
+    public ActorBean() {
     }
 
-    public ClientBean(long id, String name, String surname, double balance, long userId) {
+    public ActorBean(long id, String name, String surname, double balance, long userId) {
         this.id = id;
         this.name = name;
         this.surname = surname;

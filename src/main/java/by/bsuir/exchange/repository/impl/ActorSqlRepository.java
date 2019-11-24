@@ -1,6 +1,6 @@
 package by.bsuir.exchange.repository.impl;
 
-import by.bsuir.exchange.bean.CourierBean;
+import by.bsuir.exchange.bean.ActorBean;
 import by.bsuir.exchange.pool.ConnectionPool;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
@@ -13,18 +13,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class CourierSqlRepository extends SqlRepository<CourierBean> {
+public class ActorSqlRepository extends SqlRepository<ActorBean> {
+    private String updateTemplate;
+    private String insertTemplate;
 
-    public CourierSqlRepository() throws RepositoryInitializationException {
+    public ActorSqlRepository(String updateTemplate, String insertTemplate) throws RepositoryInitializationException {
         super();
+        this.updateTemplate = updateTemplate;
+        this.insertTemplate = insertTemplate;
     }
 
     @Override
-    public Optional<List<CourierBean>> process(ResultSet resultSet) throws SQLException {
-        Optional< List< CourierBean> > optionList = Optional.empty();
-        List< CourierBean > couriers = new LinkedList<>();
+    public Optional<List<ActorBean>> process(ResultSet resultSet) throws SQLException {
+        Optional< List<ActorBean> > optionList = Optional.empty();
+        List<ActorBean> clients = new LinkedList<>();
         while (resultSet.next()){
-            String table = DataBaseAttributesProvider.COURIER_TABLE;
+            String table = DataBaseAttributesProvider.CLIENT_TABLE;
             String column = DataBaseAttributesProvider.NAME;
             String columnName = DataBaseAttributesProvider.getColumnName(table, column);
             String name = resultSet.getString(columnName);
@@ -41,39 +45,37 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             double balance = resultSet.getDouble(columnName);
 
-
             column = DataBaseAttributesProvider.USER_ID;
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long user_id = resultSet.getLong(columnName);
 
-            CourierBean courier = new CourierBean(id, name, surname, balance, user_id);
-            couriers.add(courier);
+            ActorBean client = new ActorBean(id, name, surname, balance, user_id);
+            clients.add(client);
         }
-
-        if (couriers.size() != 0 ){
-            optionList = Optional.of(couriers);
+        if (clients.size() != 0 ){
+            optionList = Optional.of(clients);
         }
         return optionList;
     }
 
+    /*Sets id of the bean argument on success*/
     @Override
-    public void add(CourierBean courier) throws RepositoryOperationException {
-        String template = "INSERT INTO couriers (name, surname, balance, user_id) VALUES (?, ?, ?, ?)";
+    public void add(ActorBean client) throws RepositoryOperationException {
         try{
             ConnectionPool pool = ConnectionPool.getInstance();
             Connection connection = pool.getConnection();
-            PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, courier.getName());
-            statement.setString(2, courier.getSurname());
-            statement.setDouble(3, courier.getBalance());
-            statement.setLong(4, courier.getUserId());
+            PreparedStatement statement = connection.prepareStatement(insertTemplate, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, client.getName());
+            statement.setString(2, client.getSurname());
+            statement.setDouble(3, client.getBalance());
+            statement.setLong(4, client.getUserId());
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0){
                 throw new RepositoryOperationException("Unable to perform operation");
             }
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()){
-                courier.setId(generatedKeys.getLong(1));
+                client.setId(generatedKeys.getLong(1));
             }
             pool.releaseConnection(connection);
         } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
@@ -82,21 +84,22 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
     }
 
     @Override
-    public void update(CourierBean courier) throws RepositoryOperationException {
-        String template = "UPDATE couriers SET name=?, surname=?, balance=? WHERE id=?";
+    public void update(ActorBean entity) throws RepositoryOperationException {
         try {
             ConnectionPool pool = ConnectionPool.getInstance();
             Connection connection = pool.getConnection();
 
-            PreparedStatement statement = connection.prepareStatement(template);
-            statement.setString(1, courier.getName());
-            statement.setString(2, courier.getSurname());
-            statement.setDouble(3, courier.getBalance());
-            statement.setLong(4, courier.getId());
+            PreparedStatement statement = connection.prepareStatement(updateTemplate);
+            statement.setString(1, entity.getName());
+            statement.setString(2, entity.getSurname());
+            statement.setDouble(3, entity.getBalance());
+            statement.setLong(4, entity.getId());
             statement.executeUpdate();
             pool.releaseConnection(connection);
         }catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
             throw new RepositoryOperationException(e);
         }
     }
+
+
 }
