@@ -12,8 +12,9 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.ClientSqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
-import by.bsuir.exchange.specification.client.ClientByUserIdSpecification;
 import by.bsuir.exchange.specification.Specification;
+import by.bsuir.exchange.specification.client.ClientByIdSpecification;
+import by.bsuir.exchange.specification.client.ClientByUserIdSpecification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ClientManager implements CommandHandler {
+    private static final double ZERO = 0;
     private static ClientManager instance;
 
     public static ClientManager getInstance() throws ManagerInitializationException {
@@ -54,6 +56,10 @@ public class ClientManager implements CommandHandler {
             }
             case LOGIN: {
                 status = login(request);
+                break;
+            }
+            case UPDATE_PROFILE_CLIENT: {
+                status = updateProfile(request);
                 break;
             }
             default: {
@@ -91,14 +97,44 @@ public class ClientManager implements CommandHandler {
         long userId = user.getId();
         ClientBean client = (ClientBean) request.getAttribute(PageAttributesNameProvider.CLIENT_ATTRIBUTE);
         client.setUserId(userId);
+        client.setBalance(ZERO);
         try {
             clientRepository.add(client);
-            request.setAttribute(PageAttributesNameProvider.CLIENT_ATTRIBUTE, client);
+            request.setAttribute("actor", client);
             HttpSession session = request.getSession();
             session.setAttribute(SessionAttributesNameProvider.ID,  client.getId());
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }
         return true;
+    }
+
+    private boolean updateProfile(HttpServletRequest request) throws ManagerOperationException {
+        ClientBean client = (ClientBean) request.getAttribute(PageAttributesNameProvider.CLIENT_ATTRIBUTE);
+        HttpSession session = request.getSession();
+        long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
+        client.setId(id);
+        boolean status;
+        try {
+            Specification<ClientBean, PreparedStatement, Connection> clientByIdSpecification = new ClientByIdSpecification(id);
+            Optional< List<ClientBean> >  optionalCouriers = clientRepository.find(clientByIdSpecification);
+            if (optionalCouriers.isPresent()){
+                ClientBean clientFound = optionalCouriers.get().get(0);
+                if (client.getName().isEmpty()){
+                    client.setName(clientFound.getName());
+                }
+                if (client.getSurname().isEmpty()){
+                    client.setSurname(clientFound.getSurname());
+                }
+                clientRepository.update(client);
+                request.setAttribute(PageAttributesNameProvider.CLIENT_ATTRIBUTE, client);
+                status = true;
+            }else{
+                status = false;
+            }
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
+        }
+        return status;
     }
 }

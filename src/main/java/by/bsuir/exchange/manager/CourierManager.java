@@ -93,9 +93,6 @@ public class CourierManager implements CommandHandler {
                 if (courier.getSurname().isEmpty()){
                     courier.setSurname(courierFound.getSurname());
                 }
-                if (courier.getTransport().isEmpty()){
-                    courier.setTransport(courierFound.getTransport());
-                }
                 courierRepository.update(courier);
                 request.setAttribute(PageAttributesNameProvider.COURIER_ATTRIBUTE, courier);
                 status = true;

@@ -57,14 +57,15 @@ public class ClientSqlRepository extends SqlRepository<ClientBean> {
     /*Sets id of the bean argument on success*/
     @Override
     public void add(ClientBean client) throws RepositoryOperationException {
-        String template = "INSERT INTO clients (name, surname, user_id) VALUES (?, ?, ?)";
+        String template = "INSERT INTO clients (name, surname, balance, user_id) VALUES (?, ?, ?, ?)";
         try{
             ConnectionPool pool = ConnectionPool.getInstance();
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, client.getName());
             statement.setString(2, client.getSurname());
-            statement.setLong(3, client.getUserId());
+            statement.setDouble(3, client.getBalance());
+            statement.setLong(4, client.getUserId());
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0){
                 throw new RepositoryOperationException("Unable to perform operation");
@@ -81,7 +82,21 @@ public class ClientSqlRepository extends SqlRepository<ClientBean> {
 
     @Override
     public void update(ClientBean entity) throws RepositoryOperationException {
-        throw new UnsupportedOperationException();
+        String template = "UPDATE clients SET name=?, surname=?, balance=? WHERE id=?";
+        try {
+            ConnectionPool pool = ConnectionPool.getInstance();
+            Connection connection = pool.getConnection();
+
+            PreparedStatement statement = connection.prepareStatement(template);
+            statement.setString(1, entity.getName());
+            statement.setString(2, entity.getSurname());
+            statement.setDouble(3, entity.getBalance());
+            statement.setLong(4, entity.getId());
+            statement.executeUpdate();
+            pool.releaseConnection(connection);
+        }catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+            throw new RepositoryOperationException(e);
+        }
     }
 
 

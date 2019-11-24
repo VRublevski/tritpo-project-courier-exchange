@@ -33,19 +33,20 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             String surname = resultSet.getString(columnName);
 
-            column = DataBaseAttributesProvider.TRANSPORT;
-            columnName = DataBaseAttributesProvider.getColumnName(table, column);
-            String transport = resultSet.getString(columnName);
-
             column = DataBaseAttributesProvider.ID;
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long id = resultSet.getLong(columnName);
+
+            column = DataBaseAttributesProvider.BALANCE;
+            columnName = DataBaseAttributesProvider.getColumnName(table, column);
+            double balance = resultSet.getDouble(columnName);
+
 
             column = DataBaseAttributesProvider.USER_ID;
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long user_id = resultSet.getLong(columnName);
 
-            CourierBean courier = new CourierBean(id, name, surname, transport, user_id);
+            CourierBean courier = new CourierBean(id, name, surname, balance, user_id);
             couriers.add(courier);
         }
 
@@ -57,14 +58,14 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
 
     @Override
     public void add(CourierBean courier) throws RepositoryOperationException {
-        String template = "INSERT INTO couriers (name, surname, transport, user_id) VALUES (?, ?, ?, ?)";
+        String template = "INSERT INTO couriers (name, surname, balance, user_id) VALUES (?, ?, ?, ?)";
         try{
             ConnectionPool pool = ConnectionPool.getInstance();
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, courier.getName());
             statement.setString(2, courier.getSurname());
-            statement.setString(3, courier.getTransport());
+            statement.setDouble(3, courier.getBalance());
             statement.setLong(4, courier.getUserId());
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0){
@@ -82,7 +83,7 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
 
     @Override
     public void update(CourierBean courier) throws RepositoryOperationException {
-        String template = "UPDATE couriers SET name=?, surname=?, transport=? WHERE id=?";
+        String template = "UPDATE couriers SET name=?, surname=?, balance=? WHERE id=?";
         try {
             ConnectionPool pool = ConnectionPool.getInstance();
             Connection connection = pool.getConnection();
@@ -90,7 +91,7 @@ public class CourierSqlRepository extends SqlRepository<CourierBean> {
             PreparedStatement statement = connection.prepareStatement(template);
             statement.setString(1, courier.getName());
             statement.setString(2, courier.getSurname());
-            statement.setString(3, courier.getTransport());
+            statement.setDouble(3, courier.getBalance());
             statement.setLong(4, courier.getId());
             statement.executeUpdate();
             pool.releaseConnection(connection);

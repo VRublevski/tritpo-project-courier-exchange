@@ -36,10 +36,10 @@ public class CommandFactory {
         successPages = new String[N_COMMANDS];
         failurePages = new String[N_COMMANDS];
 
-        successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
+        successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(EDIT_PROFILE_PAGE_PATH);
         failurePages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(LOGIN_PAGE_PATH);
 
-        successPages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
+        successPages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(EDIT_PROFILE_PAGE_PATH);
         failurePages[CommandEnum.REGISTER.ordinal()] = ConfigurationProvider.getProperty(REGISTER_PAGE_PATH);
 
         successPages[CommandEnum.UPDATE_PROFILE_CLIENT.ordinal()] = ConfigurationProvider.getProperty(CABINET_PAGE_PATH);
