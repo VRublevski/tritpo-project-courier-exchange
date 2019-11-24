@@ -4,16 +4,26 @@ public class ClientBean implements Markable{
     private long id;
     private String name;
     private String surname;
+    private double balance;
     private long userId;
 
     public ClientBean() {
     }
 
-    public ClientBean(long id, String name, String surname, long userId) {
+    public ClientBean(long id, String name, String surname, double balance, long userId) {
         this.id = id;
         this.name = name;
         this.surname = surname;
+        this.balance = balance;
         this.userId = userId;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
     public long getId() {

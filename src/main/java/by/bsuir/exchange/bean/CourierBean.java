@@ -4,18 +4,27 @@ public class CourierBean implements Markable{
     private long id;
     private String name;
     private String surname;
-    private String transport;
+    private double balance;
     private long userId;
+
 
     public CourierBean() {
     }
 
-    public CourierBean(long id, String name, String surname, String transport, long userId) {
+    public CourierBean(long id, String name, String surname, double balance,  long userId) {
         this.id = id;
         this.name = name;
         this.surname = surname;
-        this.transport = transport;
+        this.balance = balance;
         this.userId = userId;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
     public long getId() {
@@ -40,14 +49,6 @@ public class CourierBean implements Markable{
 
     public void setSurname(String surname) {
         this.surname = surname;
-    }
-
-    public String getTransport() {
-        return transport;
-    }
-
-    public void setTransport(String transport) {
-        this.transport = transport;
     }
 
     public long getUserId() {

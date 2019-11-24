@@ -37,11 +37,15 @@ public class ClientSqlRepository extends SqlRepository<ClientBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long id = resultSet.getLong(columnName);
 
+            column = DataBaseAttributesProvider.BALANCE;
+            columnName = DataBaseAttributesProvider.getColumnName(table, column);
+            double balance = resultSet.getDouble(columnName);
+
             column = DataBaseAttributesProvider.USER_ID;
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long user_id = resultSet.getLong(columnName);
 
-            ClientBean client = new ClientBean(id, name, surname, user_id);
+            ClientBean client = new ClientBean(id, name, surname, balance, user_id);
             clients.add(client);
         }
         if (clients.size() != 0 ){

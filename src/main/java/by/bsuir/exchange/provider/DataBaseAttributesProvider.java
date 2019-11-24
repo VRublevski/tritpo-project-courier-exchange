@@ -30,6 +30,8 @@ public class DataBaseAttributesProvider {
 
     public static final String COURIER_TABLE = "courier";
     public static final String TRANSPORT = "TRANSPORT";
+    public static final String OFFER = "OFFER";
+    public static final String BALANCE = "BALANCE";
 
     public static final String DELIVERY_TABLE = "delivery";
     public static final String CLIENT_ID = "CLIENT_ID";
@@ -51,13 +53,14 @@ public class DataBaseAttributesProvider {
         clientColumns.put(ID, "id");
         clientColumns.put(NAME, "name");
         clientColumns.put(SURNAME, "surname");
+        clientColumns.put(BALANCE, "balance");
         clientColumns.put(USER_ID, "user_id");
 
 
         courierColumns.put(ID, "id");
         courierColumns.put(NAME, "name");
         courierColumns.put(SURNAME, "surname");
-        courierColumns.put(TRANSPORT, "transport");
+        courierColumns.put(BALANCE, "balance");
         courierColumns.put(USER_ID, "user_id");
 
         deliveryColumns.put(ID, "id");
