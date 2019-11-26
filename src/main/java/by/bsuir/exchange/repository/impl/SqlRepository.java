@@ -1,7 +1,7 @@
 package by.bsuir.exchange.repository.impl;
 
+import by.bsuir.exchange.pool.GlobalConnectionPool;
 import by.bsuir.exchange.pool.ConnectionPool;
-import by.bsuir.exchange.pool.Pool;
 import by.bsuir.exchange.pool.exception.PoolDestructionException;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
 import by.bsuir.exchange.pool.exception.PoolOperationException;
@@ -21,11 +21,11 @@ import java.util.Optional;
 //FIXME add uses predefined names of tables
 
 public abstract class SqlRepository<T> implements Repository<T, PreparedStatement, Connection> {
-    Pool pool;
+    ConnectionPool pool;
 
     SqlRepository() throws RepositoryInitializationException {
         try {
-            pool = ConnectionPool.getInstance();
+            pool = GlobalConnectionPool.getInstance();
         } catch (PoolInitializationException e) {
             throw new RepositoryInitializationException(e);
         }
@@ -67,7 +67,7 @@ public abstract class SqlRepository<T> implements Repository<T, PreparedStatemen
     }
 
     public <T2> SqlRepository<T> pack(SqlRepository<T2> other) { //Two only
-        Pool localPool = new Pool(){
+        ConnectionPool localPool = new ConnectionPool(){
             private static final int ALL_DONE = 2;
             private Connection connection;
             private int statusOperations;

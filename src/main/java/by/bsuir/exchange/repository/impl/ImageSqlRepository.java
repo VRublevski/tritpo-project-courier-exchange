@@ -1,7 +1,7 @@
 package by.bsuir.exchange.repository.impl;
 
 import by.bsuir.exchange.bean.ImageBean;
-import by.bsuir.exchange.pool.ConnectionPool;
+import by.bsuir.exchange.pool.GlobalConnectionPool;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
@@ -55,7 +55,7 @@ public class ImageSqlRepository extends SqlRepository<ImageBean> {
     public void add(ImageBean entity) throws RepositoryOperationException {
         String template = "INSERT INTO images (role, role_id, file_name) VALUES (?, ?, ?)";
         try{
-            ConnectionPool pool = ConnectionPool.getInstance();
+            GlobalConnectionPool pool = GlobalConnectionPool.getInstance();
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, entity.getRole().toUpperCase());
@@ -76,7 +76,7 @@ public class ImageSqlRepository extends SqlRepository<ImageBean> {
     }
 
     @Override
-    public void update(ImageBean entity) throws RepositoryOperationException {
+    public void update(ImageBean entity) {
         throw new UnsupportedOperationException();
     }
 

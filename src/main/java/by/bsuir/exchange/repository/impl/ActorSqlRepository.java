@@ -1,7 +1,7 @@
 package by.bsuir.exchange.repository.impl;
 
 import by.bsuir.exchange.bean.ActorBean;
-import by.bsuir.exchange.pool.ConnectionPool;
+import by.bsuir.exchange.pool.GlobalConnectionPool;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
 import by.bsuir.exchange.pool.exception.PoolOperationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
@@ -86,7 +86,7 @@ public class ActorSqlRepository extends SqlRepository<ActorBean> {
     @Override
     public void update(ActorBean entity) throws RepositoryOperationException {
         try {
-            ConnectionPool pool = ConnectionPool.getInstance();
+            GlobalConnectionPool pool = GlobalConnectionPool.getInstance();
             Connection connection = pool.getConnection();
 
             PreparedStatement statement = connection.prepareStatement(updateTemplate);

@@ -1,8 +1,6 @@
 package by.bsuir.exchange.repository.impl;
 
 import by.bsuir.exchange.bean.UserBean;
-import by.bsuir.exchange.pool.ConnectionPool;
-import by.bsuir.exchange.pool.exception.PoolInitializationException;
 import by.bsuir.exchange.pool.exception.PoolOperationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
