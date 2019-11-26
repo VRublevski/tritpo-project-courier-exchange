@@ -2,6 +2,9 @@ package by.bsuir.exchange.validator;
 
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.entity.RoleEnum;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +21,8 @@ public class UserValidator {
             isValid &= validateEmail(userBean);
         }
         if (userBean.getPassword() != null){
+            Logger logger = LogManager.getRootLogger();
+            logger.log(Level.INFO, "Not valid password");
             isValid &= validatePassword(userBean);
         }
         if (userBean.getRole() != null){
