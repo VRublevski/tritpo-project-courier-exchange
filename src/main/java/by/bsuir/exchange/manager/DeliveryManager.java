@@ -11,11 +11,10 @@ import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.DeliverySqlRepository;
-import by.bsuir.exchange.repository.impl.SqlRepository;
+import by.bsuir.exchange.specification.Specification;
 import by.bsuir.exchange.specification.delivery.DeliveryByActorIdSpecification;
 import by.bsuir.exchange.specification.delivery.DeliveryByClientIdSpecification;
 import by.bsuir.exchange.specification.delivery.DeliveryByCourierIdSpecification;
-import by.bsuir.exchange.specification.Specification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -25,31 +24,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class DeliveryManager implements CommandHandler {
-    private static DeliveryManager instance;
+public class DeliveryManager extends AbstractManager<DeliveryBean> implements CommandHandler {
 
-    public static DeliveryManager getInstance() throws ManagerInitializationException {
-        if (instance == null){
-            SqlRepository<DeliveryBean> repository;
-            try {
-                repository = new DeliverySqlRepository();
-            } catch (RepositoryInitializationException e) {
-                throw new ManagerInitializationException(e);
-            }
-            instance = new DeliveryManager(repository);
+    public DeliveryManager() throws ManagerInitializationException {
+        try {
+            this.repository = new DeliverySqlRepository();
+        } catch (RepositoryInitializationException e) {
+            throw new ManagerInitializationException(e);
         }
-        return instance;
+
     }
-
-    private SqlRepository<DeliveryBean> repository;
-
-    private DeliveryManager(SqlRepository<DeliveryBean> repository){
-        this.repository = repository;
-    }
-
 
     @Override
-    public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerInitializationException, ManagerOperationException {
+    public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException {
         boolean status;
         switch (command){
             case REQUEST_DELIVERY: {

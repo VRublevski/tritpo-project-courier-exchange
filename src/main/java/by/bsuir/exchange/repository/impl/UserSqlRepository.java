@@ -3,6 +3,7 @@ package by.bsuir.exchange.repository.impl;
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.pool.ConnectionPool;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
+import by.bsuir.exchange.pool.exception.PoolOperationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
@@ -54,7 +55,6 @@ public class UserSqlRepository extends SqlRepository<UserBean> {
     public void add(UserBean user) throws RepositoryOperationException {    //FIXME close statement
         String template = "INSERT INTO users (email, password, role) VALUES (?, ?, ?)";
         try{
-            ConnectionPool pool = ConnectionPool.getInstance();
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, user.getEmail());
@@ -69,7 +69,7 @@ public class UserSqlRepository extends SqlRepository<UserBean> {
                 user.setId(generatedKeys.getLong(1));
             }
             pool.releaseConnection(connection);
-        } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+        } catch (PoolTimeoutException | SQLException | PoolOperationException e) {
             throw new RepositoryOperationException(e);
         }
     }

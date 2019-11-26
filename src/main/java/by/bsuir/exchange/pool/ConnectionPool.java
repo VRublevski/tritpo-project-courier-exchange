@@ -1,6 +1,6 @@
 package by.bsuir.exchange.pool;
 
-import by.bsuir.exchange.pool.exception.PoolDestractionException;
+import by.bsuir.exchange.pool.exception.PoolDestructionException;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ConnectionPool{
+public class ConnectionPool extends Pool{
     private static final int CAPACITY = 20;
 
     private static volatile ConnectionPool INSTANCE;
@@ -67,7 +67,7 @@ public class ConnectionPool{
         }
     }
 
-    public void closePool() throws PoolDestractionException {
+    public void closePool() throws PoolDestructionException {
         instanceLock.lock();
         try{
             if (!isClosed){
@@ -81,7 +81,7 @@ public class ConnectionPool{
             }
         instanceLock.unlock();
         } catch (SQLException e) {
-            throw  new PoolDestractionException(e);
+            throw  new PoolDestructionException(e);
         }
     }
 }

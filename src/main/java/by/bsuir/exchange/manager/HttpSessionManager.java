@@ -7,10 +7,10 @@ import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
+import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
-import by.bsuir.exchange.repository.impl.SqlRepository;
 import by.bsuir.exchange.repository.impl.UserSqlRepository;
 import by.bsuir.exchange.specification.Specification;
 import by.bsuir.exchange.specification.user.UserByEmailSqlSpecification;
@@ -22,26 +22,14 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-public class HttpSessionManager implements CommandHandler {
-    private static HttpSessionManager instance;
+public class HttpSessionManager extends AbstractManager<UserBean> implements CommandHandler {
 
-    public static HttpSessionManager getInstance() throws ManagerInitializationException {
-        if (instance == null){
-            SqlRepository<UserBean> userRepository;
-            try {
-                userRepository = new UserSqlRepository();
-            } catch (RepositoryInitializationException e) {
-                throw new ManagerInitializationException(e);
-            }
-            instance = new HttpSessionManager(userRepository);
+    public HttpSessionManager() throws ManagerInitializationException {
+        try{
+            this.repository = new UserSqlRepository();
+        } catch (RepositoryInitializationException e) {
+            throw new ManagerInitializationException(e);
         }
-        return instance;
-    }
-
-    private SqlRepository<UserBean> repository;
-
-    private HttpSessionManager(SqlRepository<UserBean> repository){
-        this.repository = repository;
     }
 
     @Override
@@ -55,7 +43,7 @@ public class HttpSessionManager implements CommandHandler {
                 break;
             }
             case REGISTER: {
-                String attribute = PageAttributesNameProvider.USER_ATTRIBUTE;
+                String attribute = RequestAttributesNameProvider.USER_ATTRIBUTE;
                 UserBean user = (UserBean) request.getAttribute(attribute);
                 status = register(request, user);
                 break;

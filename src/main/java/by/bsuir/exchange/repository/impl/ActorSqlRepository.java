@@ -3,6 +3,7 @@ package by.bsuir.exchange.repository.impl;
 import by.bsuir.exchange.bean.ActorBean;
 import by.bsuir.exchange.pool.ConnectionPool;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
+import by.bsuir.exchange.pool.exception.PoolOperationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
@@ -62,7 +63,6 @@ public class ActorSqlRepository extends SqlRepository<ActorBean> {
     @Override
     public void add(ActorBean client) throws RepositoryOperationException {
         try{
-            ConnectionPool pool = ConnectionPool.getInstance();
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(insertTemplate, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, client.getName());
@@ -78,7 +78,7 @@ public class ActorSqlRepository extends SqlRepository<ActorBean> {
                 client.setId(generatedKeys.getLong(1));
             }
             pool.releaseConnection(connection);
-        } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+        } catch (PoolTimeoutException | SQLException | PoolOperationException e) {
             throw new RepositoryOperationException(e);
         }
     }

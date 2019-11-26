@@ -1,7 +1,11 @@
 package by.bsuir.exchange.repository.impl;
 
 import by.bsuir.exchange.pool.ConnectionPool;
+import by.bsuir.exchange.pool.Pool;
+import by.bsuir.exchange.pool.exception.PoolDestructionException;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
+import by.bsuir.exchange.pool.exception.PoolOperationException;
+import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.repository.Repository;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
@@ -17,8 +21,7 @@ import java.util.Optional;
 //FIXME add uses predefined names of tables
 
 public abstract class SqlRepository<T> implements Repository<T, PreparedStatement, Connection> {
-    private ConnectionPool pool;
-
+    Pool pool;
 
     SqlRepository() throws RepositoryInitializationException {
         try {
@@ -54,4 +57,69 @@ public abstract class SqlRepository<T> implements Repository<T, PreparedStatemen
     }
 
     public abstract Optional< List<T> > process(ResultSet resultSet) throws SQLException;
+
+    public void closeRepository() throws RepositoryOperationException {
+        try {
+            pool.closePool();
+        } catch (PoolOperationException | PoolDestructionException e) {
+            throw new RepositoryOperationException(e);
+        }
+    }
+
+    public <T2> SqlRepository<T> pack(SqlRepository<T2> other) { //Two only
+        Pool localPool = new Pool(){
+            private static final int ALL_DONE = 2;
+            private Connection connection;
+            private int statusOperations;
+            private int statusClosed;
+
+            {
+                outer = SqlRepository.this.pool;
+            }
+
+            @Override
+            public Connection getConnection() throws PoolOperationException, PoolTimeoutException {
+                if (connection == null){
+                    try {
+                        connection = outer.getConnection();
+                        connection.setAutoCommit(false);
+                    } catch (SQLException e) {
+                        throw new PoolOperationException(e);
+                    }
+                }
+                return connection;
+            }
+
+            @Override
+            public void releaseConnection(Connection con) throws PoolOperationException, PoolTimeoutException {
+                ++statusOperations;
+                if (statusOperations == ALL_DONE){
+                    try {
+                        connection.commit();
+                        outer.releaseConnection(connection);
+                        connection = null;
+                    } catch ( SQLException e) {
+                        throw new PoolOperationException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void closePool() throws PoolOperationException, PoolDestructionException {
+                ++statusClosed;
+                if (statusClosed == ALL_DONE){
+                    if (connection != null){
+                        try {
+                            outer.releaseConnection(connection);
+                        } catch (PoolTimeoutException e) {
+                            throw new PoolDestructionException(e);
+                        }
+                    }
+                }
+            }
+        };
+        this.pool = localPool;
+        other.pool = localPool;
+        return this;
+    }
 }

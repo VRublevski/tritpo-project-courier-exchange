@@ -5,13 +5,11 @@ import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.Command;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.command.exception.CommandInitializationException;
-import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.ConfigurationProvider;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,11 +71,7 @@ public class CommandFactory {
             commandEnum = CommandEnum.valueOf(action.toUpperCase());
         }
         CommandHandler handler;
-        try {
-            handler = ChainFactory.getChain(commandEnum);
-        } catch (ManagerInitializationException e) {
-            throw new CommandInitializationException(e);
-        }
+        handler = ChainFactory.getChain(commandEnum);
         String successPage;
         String failurePage;
         if (isSamePage(commandEnum)){
