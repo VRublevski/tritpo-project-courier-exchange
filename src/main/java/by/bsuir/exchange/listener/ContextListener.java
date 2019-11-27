@@ -41,7 +41,7 @@ public class ContextListener implements ServletContextListener {
             DriverManager.deregisterDriver(driver);
         } catch (SQLException e) {
             Logger logger = LogManager.getRootLogger();
-            logger.fatal("Unable to load a sql driver");
+            logger.fatal("Unable to deregister a sql driver");
         }
     }
 }
