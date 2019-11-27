@@ -14,8 +14,8 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.factory.ActorSqlRepositoryFactory;
 import by.bsuir.exchange.specification.Specification;
-import by.bsuir.exchange.specification.actor.ActorByIdSpecification;
-import by.bsuir.exchange.specification.actor.ActorByUserIdSpecification;
+import by.bsuir.exchange.specification.actor.factory.ActorIdSqlSpecificationFactory;
+import by.bsuir.exchange.specification.actor.factory.ActorUserIdSqlSpecificationFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -61,9 +61,10 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
 
     private boolean login(HttpServletRequest request) throws ManagerOperationException {
         boolean status = false;
-        UserBean user = (UserBean) request.getAttribute(PageAttributesNameProvider.USER_ATTRIBUTE);
+        UserBean user = (UserBean) request.getAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE);
+        RoleEnum role = RoleEnum.valueOf(user.getRole());
         long userId = user.getId();
-        Specification<ActorBean, PreparedStatement, Connection> specification = new ActorByUserIdSpecification(userId);
+        Specification<ActorBean, PreparedStatement, Connection> specification = ActorUserIdSqlSpecificationFactory.getSpecification(role, userId);
         try {
             Optional<List<ActorBean> > clientsOptional = repository.find(specification);
             if (clientsOptional.isPresent()){
@@ -100,14 +101,15 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
     }
 
     private boolean updateProfile(HttpServletRequest request) throws ManagerOperationException {
-        String attribute = getActorAttribute(request);
+        String attribute = RequestAttributesNameProvider.ACTOR_ATTRIBUTE;
         ActorBean actor = (ActorBean) request.getAttribute(attribute);
         HttpSession session = request.getSession();
         long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
+        RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
         actor.setId(id);
         boolean status;
         try {
-            Specification<ActorBean, PreparedStatement, Connection> actorByIdSpecification = new ActorByIdSpecification(id);
+            Specification<ActorBean, PreparedStatement, Connection> actorByIdSpecification = ActorIdSqlSpecificationFactory.getSpecification(role, id);
             Optional< List<ActorBean> >  optionalCouriers = repository.find(actorByIdSpecification);
             if (optionalCouriers.isPresent()){
                 ActorBean clientFound = optionalCouriers.get().get(0);
@@ -119,6 +121,7 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
                 }
                 repository.update(actor);
                 request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, actor);
+
                 status = true;
             }else{
                 status = false;

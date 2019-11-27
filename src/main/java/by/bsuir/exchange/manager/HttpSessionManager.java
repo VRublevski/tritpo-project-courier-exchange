@@ -37,7 +37,7 @@ public class HttpSessionManager extends AbstractManager<UserBean> implements Com
         boolean status;
         switch (command){
             case LOGIN: {
-                String attribute = PageAttributesNameProvider.USER_ATTRIBUTE;
+                String attribute = RequestAttributesNameProvider.USER_ATTRIBUTE;
                 UserBean user = (UserBean) request.getAttribute(attribute);
                 status = login(request, user);
                 break;
@@ -73,7 +73,7 @@ public class HttpSessionManager extends AbstractManager<UserBean> implements Com
                 HttpSession session = request.getSession();
                 RoleEnum role = RoleEnum.valueOf(userFound.getRole().toUpperCase());
                 session.setAttribute(SessionAttributesNameProvider.ROLE, role);
-                request.setAttribute(PageAttributesNameProvider.USER_ATTRIBUTE, userFound);
+                request.setAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE, userFound);
                 return true;
             }else{
                 return false;

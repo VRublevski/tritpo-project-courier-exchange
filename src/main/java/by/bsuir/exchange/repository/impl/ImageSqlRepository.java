@@ -76,8 +76,20 @@ public class ImageSqlRepository extends SqlRepository<ImageBean> {
     }
 
     @Override
-    public void update(ImageBean entity) {
-        throw new UnsupportedOperationException();
+    public void update(ImageBean entity) throws RepositoryOperationException {
+        String template = "UPDATE images SET file_name=? WHERE role = ? AND role_id = ?";
+        try{
+            GlobalConnectionPool pool = GlobalConnectionPool.getInstance();
+            Connection connection = pool.getConnection();
+            PreparedStatement statement = connection.prepareStatement(template);
+            statement.setString(1, entity.getFileName());
+            statement.setString(2, entity.getRole());
+            statement.setLong(3, entity.getRoleId());
+            statement.executeUpdate();
+            pool.releaseConnection(connection);
+        } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+            throw new RepositoryOperationException(e);
+        }
     }
 
 }
