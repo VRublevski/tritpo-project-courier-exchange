@@ -12,6 +12,7 @@ public class DataBaseAttributesProvider {
     private static final Map<String, String > clientColumns = new HashMap<>();
     private static final Map<String, String > courierColumns = new HashMap<>();
     private static final Map<String, String > deliveryColumns = new HashMap<>();
+    private static final Map<String, String > offerColumns = new HashMap<>();
     private static final Map<String, String > imagesColumns = new HashMap<>();
 
     public static final String DRIVER_NAME = "DRIVER_NAME";
@@ -29,8 +30,6 @@ public class DataBaseAttributesProvider {
     public static final String USER_ID = "USER_ID";
 
     public static final String COURIER_TABLE = "courier";
-    public static final String TRANSPORT = "TRANSPORT";
-    public static final String OFFER = "OFFER";
     public static final String BALANCE = "BALANCE";
 
     public static final String DELIVERY_TABLE = "delivery";
@@ -38,6 +37,10 @@ public class DataBaseAttributesProvider {
     public static final String CLIENT_FINISHED = "CLIENT_FINISHED";
     public static final String COURIER_ID = "COURIER_ID";
     public static final String COURIER_FINISHED = "COURIER_FINISHED";
+
+    public static final String OFFER_TABLE = "offer";
+    public static final String TRANSPORT = "TRANSPORT";
+    public static final String PRICE = "PRICE";
 
     public static final String IMAGES_TABLE = "images";
     public static final String ROLE_ID = "ROLE_ID";
@@ -69,6 +72,11 @@ public class DataBaseAttributesProvider {
         deliveryColumns.put(COURIER_ID, "courierId");
         deliveryColumns.put(COURIER_FINISHED, "courierFinished");
 
+        offerColumns.put(ID, "id");
+        offerColumns.put(PRICE, "price");
+        offerColumns.put(TRANSPORT, "transport");
+        offerColumns.put(COURIER_ID, "courier_id");
+
         imagesColumns.put(ID, "id");
         imagesColumns.put(ROLE, "role");
         imagesColumns.put(ROLE_ID, "role_id");
@@ -96,6 +104,10 @@ public class DataBaseAttributesProvider {
             }
             case IMAGES_TABLE: {
                 columnNames = imagesColumns;
+                break;
+            }
+            case OFFER_TABLE: {
+                columnNames = offerColumns;
                 break;
             }
             case DELIVERY_TABLE: {

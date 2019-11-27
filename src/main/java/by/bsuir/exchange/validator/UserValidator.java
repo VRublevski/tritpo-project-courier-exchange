@@ -21,8 +21,6 @@ public class UserValidator {
             isValid &= validateEmail(userBean);
         }
         if (userBean.getPassword() != null){
-            Logger logger = LogManager.getRootLogger();
-            logger.log(Level.INFO, "Not valid password");
             isValid &= validatePassword(userBean);
         }
         if (userBean.getRole() != null){

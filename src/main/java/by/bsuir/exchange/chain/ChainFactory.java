@@ -1,19 +1,18 @@
 package by.bsuir.exchange.chain;
 
 import by.bsuir.exchange.bean.ActorBean;
+import by.bsuir.exchange.bean.OfferBean;
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.checker.PermissionChecker;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
-import by.bsuir.exchange.manager.AbstractManager;
-import by.bsuir.exchange.manager.ActorManager;
-import by.bsuir.exchange.manager.DeliveryManager;
-import by.bsuir.exchange.manager.HttpSessionManager;
+import by.bsuir.exchange.manager.*;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.validator.ActorValidator;
+import by.bsuir.exchange.validator.OfferValidator;
 import by.bsuir.exchange.validator.UserValidator;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -29,16 +28,19 @@ public class ChainFactory { //Load on servlet initialization
     /*Bean creators*/
     private static CommandHandler userBeanCreator;
     private static CommandHandler actorBeanCreator;
+    private static CommandHandler offerBeanCreator;
 
     /*Branches*/
     private static CommandHandler sessionBranch;
-    private static CommandHandler clientBranch;
+    private static CommandHandler actorBranch;
 
     /*Managers*/
     private static CommandHandler sessionManager;
     private static CommandHandler clientManager;
     private static CommandHandler courierManager;
     private static CommandHandler deliveryManager;
+    private static CommandHandler offerManager;
+
 
     /*Transactional*/
     private static CommandHandler registerTransaction;
@@ -46,6 +48,7 @@ public class ChainFactory { //Load on servlet initialization
     /*Validators*/
     private static CommandHandler userBeanValidator;
     private static CommandHandler actorBeanValidator;
+    private static CommandHandler offerBeanValidator;
 
     /*Checkers*/
     private static CommandHandler permissionChecker;
@@ -69,16 +72,19 @@ public class ChainFactory { //Load on servlet initialization
         CommandHandler chain;
         switch (command){
             case LOGIN:{
-                chain = permissionChecker.chain(sessionBranch).chain(clientBranch);
+                chain = permissionChecker.chain(sessionBranch).chain(actorBranch);
                 break;
             }
             case REGISTER: {
                 chain = permissionChecker.chain(registerTransaction);
                 break;
             }
-            case UPDATE_PROFILE_COURIER:
+            case UPDATE_PROFILE_COURIER:{
+                chain = permissionChecker.chain(offerBeanCreator).chain(offerBeanValidator).chain(actorBranch).chain(offerManager);
+                break;
+            }
             case UPDATE_PROFILE_CLIENT: {
-                chain = permissionChecker.chain(clientBranch);
+                chain = permissionChecker.chain(actorBranch);
                 break;
             }
             case SET_LOCALE:{
@@ -138,6 +144,12 @@ public class ChainFactory { //Load on servlet initialization
             ActorBean bean = (ActorBean) request.getAttribute(attribute);
             return ActorValidator.validate(bean);
         };
+
+        offerBeanValidator = (request, command) -> {
+            String attribute = RequestAttributesNameProvider.OFFER_ATTRIBUTE;
+            OfferBean  bean = (OfferBean) request.getAttribute(attribute);
+            return OfferValidator.validate(bean);
+        };
     }
 
     private static void initCheckers(){
@@ -167,21 +179,12 @@ public class ChainFactory { //Load on servlet initialization
     }
 
     private static void initSessionBranch() {
-        String attribute = PageAttributesNameProvider.USER_ATTRIBUTE;
-        CommandHandler beanCreator = (request, command) -> {
-            UserBean user = new UserBean();
-            return getBeanCreator(user, attribute).handle(request, command);
-        };
-        sessionBranch = beanCreator.chain(userBeanValidator).chain(sessionManager);
+        sessionBranch = userBeanCreator.chain(userBeanValidator).chain(sessionManager);
     }
 
-    private static void initClientBranch() {
-        String attribute = PageAttributesNameProvider.CLIENT_ATTRIBUTE;
-        CommandHandler beanCreator = (request, command) -> {
-            ActorBean user = new ActorBean();
-            return getBeanCreator(user, attribute).handle(request, command);
-        };
-        clientBranch = beanCreator.chain(actorBeanValidator).chain(clientManager);
+    private static void initActorBranch() {
+        CommandHandler branch = clientManager.branch(isCourierSession, courierManager);
+        actorBranch = actorBeanCreator.chain(actorBeanValidator).chain(branch);
     }
 
 
@@ -191,6 +194,7 @@ public class ChainFactory { //Load on servlet initialization
         clientManager = new ActorManager(RoleEnum.CLIENT);
         courierManager = new ActorManager(RoleEnum.COURIER);
         deliveryManager = new DeliveryManager();
+        offerManager = new OfferManager();
     }
 
 
@@ -221,7 +225,7 @@ public class ChainFactory { //Load on servlet initialization
 
     private static void initBranches() {
         initSessionBranch();
-        initClientBranch();
+        initActorBranch();
     }
 
 
@@ -232,8 +236,13 @@ public class ChainFactory { //Load on servlet initialization
         };
 
         actorBeanCreator = (request, command1) -> {
-            ActorBean user = new ActorBean();
-            return getBeanCreator(user, RequestAttributesNameProvider.ACTOR_ATTRIBUTE).handle(request, command1);
+            ActorBean actor = new ActorBean();
+            return getBeanCreator(actor, RequestAttributesNameProvider.ACTOR_ATTRIBUTE).handle(request, command1);
+        };
+
+        offerBeanCreator = (request, command) -> {
+            OfferBean offer = new OfferBean();
+            return getBeanCreator(offer, RequestAttributesNameProvider.OFFER_ATTRIBUTE).handle(request, command);
         };
     }
 }
