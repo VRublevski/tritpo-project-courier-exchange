@@ -89,30 +89,39 @@ public class ImageController extends HttpServlet implements Servlet {
         long roleId = (long) session.getAttribute(SessionAttributesNameProvider.ID);
 
         Part filePart = request.getPart(PageAttributesNameProvider.AVATAR);
-        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        if (filePart != null){
+            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
-        ImageBean imageBean = new ImageBean();
-        imageBean.setRole(roleString);
-        imageBean.setRoleId(roleId);
-        imageBean.setFileName(fileName);
-        try {
-            repository.add(imageBean);
-        } catch (RepositoryOperationException e) {
-            throw new ServletException(e);
+            ImageBean imageBean = new ImageBean();
+            imageBean.setRole(roleString);
+            imageBean.setRoleId(roleId);
+            imageBean.setFileName(fileName);
+            try {
+                Specification<ImageBean, PreparedStatement, Connection> specification
+                        = new ImageByRoleIdSpecification(roleString, roleId);
+                Optional<List<ImageBean> > optionalList = repository.find(specification);
+                if (optionalList.isPresent()){
+                    repository.update(imageBean);
+                }else{
+                    repository.add(imageBean);
+                }
+            } catch (RepositoryOperationException e) {
+                throw new ServletException(e);
+            }
+
+            InputStream fileContent = filePart.getInputStream();
+
+            String baseDir = ConfigurationProvider.getProperty(ConfigurationProvider.IMAGE_PATH);
+            String roleDir = imageBean.getRole();
+            String idDir = String.valueOf(imageBean.getRoleId());
+
+            Path dirPath = Paths.get(baseDir, roleDir, idDir);
+            Files.createDirectories(dirPath);
+
+            Path path = Paths.get(baseDir, roleDir, idDir, fileName);
+
+            Files.copy(fileContent, path);
         }
-
-        InputStream fileContent = filePart.getInputStream();
-
-        String baseDir = ConfigurationProvider.getProperty(ConfigurationProvider.IMAGE_PATH);
-        String roleDir = imageBean.getRole();
-        String idDir = String.valueOf(imageBean.getRoleId());
-
-        Path dirPath = Paths.get(baseDir, roleDir, idDir);
-        Files.createDirectories(dirPath);
-
-        Path path = Paths.get(baseDir, roleDir, idDir, fileName);
-
-        Files.copy(fileContent, path);
 
         String page = (String) request.getAttribute(RequestAttributesNameProvider.PAGE);
 
