@@ -77,7 +77,7 @@ public class DeliveryManager extends AbstractManager<DeliveryBean> implements Co
         if (optionalDeliveries.isPresent()){
             deliveries = optionalDeliveries.get();
         }
-        request.setAttribute(RequestAttributesNameProvider.LIST, deliveries);
+        request.setAttribute(RequestAttributesNameProvider.DELIVERY_LIST_ATTRIBUTE, deliveries);
         return true;
     }
 

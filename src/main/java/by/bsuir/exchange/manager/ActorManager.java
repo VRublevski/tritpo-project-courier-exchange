@@ -43,76 +43,98 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
     @Override
     public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException {
         boolean status;
-        switch (command){
-            case REGISTER:{
-                status = register(request);
-                break;
+        try{
+            switch (command){
+                case REGISTER:{
+                    status = register(request);
+                    break;
+                }
+                case LOGIN: {
+                    status = login(request);
+                    break;
+                }
+                case UPDATE_PROFILE_COURIER:
+                case UPDATE_PROFILE_CLIENT: {
+                    status = updateProfile(request);
+                    break;
+                }
+                case GET_OFFERS: {
+                    status = getOffers(request);
+                    break;
+                }
+                case GET_DELIVERIES: {
+                    status = getDeliveries(request);
+                    break;
+                }
+                case REQUEST_DELIVERY:{
+                    status = requestDelivery(request);
+                    break;
+                }
+                default: {
+                    throw new ManagerOperationException("Unexpected command");
+                }
             }
-            case LOGIN: {
-                status = login(request);
-                break;
-            }
-            case UPDATE_PROFILE_COURIER:
-            case UPDATE_PROFILE_CLIENT: {
-                status = updateProfile(request);
-                break;
-            }
-            case GET_OFFERS: {
-                status = getOffers(request);
-                break;
-            }
-            case REQUEST_DELIVERY:{
-                status = requestDelivery(request);
-                break;
-            }
-            default: {
-                throw new ManagerOperationException("Unexpected command");
-            }
-        }
-        return status;
-    }
-
-    private boolean requestDelivery(HttpServletRequest request) throws ManagerOperationException {
-        DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
-        long id = role == RoleEnum.COURIER? delivery.getCourierId() : delivery.getClientId();
-        Specification<ActorBean, PreparedStatement, Connection> specification = ActorIdSqlSpecificationFactory.getSpecification(role, id);
-        boolean status = false;
-        try {
-            Optional< List<ActorBean> > optionalCouriers = repository.find(specification);
-            if (optionalCouriers.isPresent()){
-                ActorBean courier = optionalCouriers.get().get(0);
-                request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, courier);
-                status = true;
-            }
-        } catch (RepositoryOperationException e) {
+        }catch (RepositoryOperationException e){
             throw new ManagerOperationException(e);
         }
         return status;
     }
 
-    private boolean login(HttpServletRequest request) throws ManagerOperationException {
+    private boolean getDeliveries(HttpServletRequest request) throws RepositoryOperationException {
+        List<DeliveryBean> deliveries = (List<DeliveryBean>) request.getAttribute(RequestAttributesNameProvider.DELIVERY_LIST_ATTRIBUTE);
+        List<ActorBean> actors = new LinkedList<>();
+        for (DeliveryBean delivery : deliveries){
+            long id = role == RoleEnum.CLIENT? delivery.getClientId() : delivery.getCourierId();
+            Specification<ActorBean, PreparedStatement, Connection> spec =
+                    ActorIdSqlSpecificationFactory.getSpecification(role, id);
+            Optional<List<ActorBean>> optionalActors = repository.find(spec);
+            if (optionalActors.isPresent()){
+                ActorBean courier = optionalActors.get().get(0);
+                actors.add(courier);
+            }else{
+                deliveries.remove(delivery);
+            }
+        }
+        request.setAttribute(RequestAttributesNameProvider.DELIVERY_LIST_ATTRIBUTE, deliveries);
+        String actorAttributeList = role == RoleEnum.CLIENT? RequestAttributesNameProvider.CLIENT_LIST
+                                                        : RequestAttributesNameProvider.COURIER_LIST;
+        request.setAttribute(actorAttributeList, actors);
+        return true;
+    }
+
+    private boolean requestDelivery(HttpServletRequest request) throws RepositoryOperationException {
+        DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
+        long id = role == RoleEnum.COURIER? delivery.getCourierId() : delivery.getClientId();
+        Specification<ActorBean, PreparedStatement, Connection> specification = ActorIdSqlSpecificationFactory.getSpecification(role, id);
+        boolean status = false;
+        Optional< List<ActorBean> > optionalCouriers = repository.find(specification);
+        if (optionalCouriers.isPresent()){
+            ActorBean courier = optionalCouriers.get().get(0);
+            request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, courier);
+            status = true;
+        }
+        return status;
+    }
+
+    private boolean login(HttpServletRequest request) throws RepositoryOperationException {
         boolean status = false;
         UserBean user = (UserBean) request.getAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE);
         RoleEnum role = RoleEnum.valueOf(user.getRole());
         long userId = user.getId();
         Specification<ActorBean, PreparedStatement, Connection> specification = ActorUserIdSqlSpecificationFactory.getSpecification(role, userId);
-        try {
-            Optional<List<ActorBean> > clientsOptional = repository.find(specification);
-            if (clientsOptional.isPresent()){
-                ActorBean client = clientsOptional.get().get(0);
-                request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, client);
-                HttpSession session = request.getSession();
-                session.setAttribute(SessionAttributesNameProvider.ID, client.getId());
-                status = true;
-            }
-        } catch (RepositoryOperationException e) {
-            throw new ManagerOperationException(e);
+        Optional<List<ActorBean> > clientsOptional = repository.find(specification);
+        if (clientsOptional.isPresent()){
+            ActorBean client = clientsOptional.get().get(0);
+            request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, client);
+            HttpSession session = request.getSession();
+            session.setAttribute(SessionAttributesNameProvider.ID, client.getId());
+            status = true;
         }
         return status;
     }
 
 
-    private boolean register(HttpServletRequest request) throws ManagerOperationException {
+    private boolean register(HttpServletRequest request) throws RepositoryOperationException {
         String userAttribute = RequestAttributesNameProvider.USER_ATTRIBUTE;
         UserBean user = (UserBean) request.getAttribute(userAttribute);
         long userId = user.getId();
@@ -120,18 +142,14 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
         ActorBean actor = (ActorBean) request.getAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE);
         actor.setUserId(userId);
         actor.setBalance(ZERO);
-        try {
-            repository.add(actor);
-            request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, actor);
-            HttpSession session = request.getSession();
-            session.setAttribute(SessionAttributesNameProvider.ID,  actor.getId());
-        } catch (RepositoryOperationException e) {
-            throw new ManagerOperationException(e);
-        }
+        repository.add(actor);
+        request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, actor);
+        HttpSession session = request.getSession();
+        session.setAttribute(SessionAttributesNameProvider.ID,  actor.getId());
         return true;
     }
 
-    private boolean updateProfile(HttpServletRequest request) throws ManagerOperationException {
+    private boolean updateProfile(HttpServletRequest request) throws RepositoryOperationException {
         String attribute = RequestAttributesNameProvider.ACTOR_ATTRIBUTE;
         ActorBean actor = (ActorBean) request.getAttribute(attribute);
         HttpSession session = request.getSession();
@@ -139,46 +157,38 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
         RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
         actor.setId(id);
         boolean status;
-        try {
-            Specification<ActorBean, PreparedStatement, Connection> actorByIdSpecification = ActorIdSqlSpecificationFactory.getSpecification(role, id);
-            Optional< List<ActorBean> >  optionalCouriers = repository.find(actorByIdSpecification);
-            if (optionalCouriers.isPresent()){
-                ActorBean clientFound = optionalCouriers.get().get(0);
-                if (actor.getName().isEmpty()){
-                    actor.setName(clientFound.getName());
-                }
-                if (actor.getSurname().isEmpty()){
-                    actor.setSurname(clientFound.getSurname());
-                }
-                repository.update(actor);
-                request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, actor);
-
-                status = true;
-            }else{
-                status = false;
+        Specification<ActorBean, PreparedStatement, Connection> actorByIdSpecification = ActorIdSqlSpecificationFactory.getSpecification(role, id);
+        Optional< List<ActorBean> >  optionalCouriers = repository.find(actorByIdSpecification);
+        if (optionalCouriers.isPresent()){
+            ActorBean clientFound = optionalCouriers.get().get(0);
+            if (actor.getName().isEmpty()){
+                actor.setName(clientFound.getName());
             }
-        } catch (RepositoryOperationException e) {
-            throw new ManagerOperationException(e);
+            if (actor.getSurname().isEmpty()){
+                actor.setSurname(clientFound.getSurname());
+            }
+            repository.update(actor);
+            request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, actor);
+
+            status = true;
+        }else{
+            status = false;
         }
         return status;
     }
 
-    private boolean getOffers(HttpServletRequest request) throws ManagerOperationException {
+    private boolean getOffers(HttpServletRequest request) throws RepositoryOperationException {
         List<OfferBean> offers = (List<OfferBean>) request.getAttribute(RequestAttributesNameProvider.OFFER_LIST_ATTRIBUTE);
         List<ActorBean> actors = new LinkedList<>();
         for (OfferBean offer : offers){
             Specification<ActorBean, PreparedStatement, Connection> spec =
                     ActorIdSqlSpecificationFactory.getSpecification(RoleEnum.COURIER, offer.getCourierId());
-            try {
-                Optional<List<ActorBean>> optionalActors = repository.find(spec);
-                if (optionalActors.isPresent()){
-                    ActorBean courier = optionalActors.get().get(0);
-                    actors.add(courier);
-                }else{
-                    offers.remove(offer);
-                }
-            } catch (RepositoryOperationException e) {
-                throw new ManagerOperationException(e);
+            Optional<List<ActorBean>> optionalActors = repository.find(spec);
+            if (optionalActors.isPresent()){
+                ActorBean courier = optionalActors.get().get(0);
+                actors.add(courier);
+            }else{
+                offers.remove(offer);
             }
         }
         request.setAttribute(RequestAttributesNameProvider.OFFER_LIST_ATTRIBUTE, offers);

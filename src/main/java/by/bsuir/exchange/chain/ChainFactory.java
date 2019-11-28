@@ -102,7 +102,8 @@ public class ChainFactory { //Load on servlet initialization
                 break;
             }
             case GET_DELIVERIES: {  //FIXME check for permissions
-                chain = deliveryManager;
+                CommandHandler branch = courierManager.branch(isCourierSession, clientManager);
+                chain = permissionChecker.chain(deliveryManager).chain(branch);
                 break;
             }
             case GET_IMAGE: {
