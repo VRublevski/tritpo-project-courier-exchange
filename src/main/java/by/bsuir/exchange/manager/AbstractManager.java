@@ -3,6 +3,7 @@ package by.bsuir.exchange.manager;
 import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
+import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.SqlRepository;
 
@@ -13,9 +14,13 @@ public abstract class AbstractManager<T> implements CommandHandler {
 
     public abstract boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException;
 
-    public <T2> AbstractManager<T> combine(AbstractManager<T2> other) {
-        SqlRepository<T> packed;
-        packed = repository.pack(other.repository);
+    public <T2> AbstractManager<T> combine(AbstractManager<T2> other) throws ManagerOperationException {
+        SqlRepository<T> packed = null;
+        try {
+            packed = repository.pack(other.repository);
+        } catch (RepositoryInitializationException e) {
+            throw new ManagerOperationException(e);
+        }
         AbstractManager<T> manager = new AbstractManager<>() {
             @Override
             public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException {
@@ -26,8 +31,8 @@ public abstract class AbstractManager<T> implements CommandHandler {
 
             @Deprecated
             public void closeManager() throws ManagerOperationException {
-                AbstractManager.this.closeManager();
                 other.closeManager();
+                AbstractManager.this.closeManager();
             }
         };
         manager.repository = packed;

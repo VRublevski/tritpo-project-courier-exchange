@@ -40,9 +40,7 @@ public class GlobalConnectionPool extends ConnectionPool {
 
     private GlobalConnectionPool() throws SQLException, ClassNotFoundException {
         String url = DataBaseAttributesProvider.getProperty(DataBaseAttributesProvider.DATABASE_URL);
-        String driverName = DataBaseAttributesProvider.getProperty(DataBaseAttributesProvider.DRIVER_NAME);
         connections = new LinkedBlockingQueue<>(CAPACITY);
-        Class.forName(driverName);
         for (int i = 0; i < CAPACITY; i++){
             Connection connection =  DriverManager.getConnection(url);
             connections.add(connection);
