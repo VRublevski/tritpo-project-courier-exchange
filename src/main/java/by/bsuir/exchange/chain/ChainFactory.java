@@ -110,7 +110,7 @@ public class ChainFactory { //Load on servlet initialization
                 break;
             }
             case REQUEST_DELIVERY: {
-                chain = permissionChecker.chain(deliveryBeanCreator).chain(deliveryManager);
+                chain = permissionChecker.chain(deliveryBeanCreator).chain(clientManager).chain(offerManager).chain(deliveryManager);
                 break;
             }
             case FINISH_DELIVERY: {

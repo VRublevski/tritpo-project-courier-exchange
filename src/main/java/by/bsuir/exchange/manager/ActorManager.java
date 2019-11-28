@@ -1,13 +1,14 @@
 package by.bsuir.exchange.manager;
 
 import by.bsuir.exchange.bean.ActorBean;
+import by.bsuir.exchange.bean.DeliveryBean;
+import by.bsuir.exchange.bean.OfferBean;
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
-import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
@@ -21,15 +22,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 public class ActorManager extends AbstractManager<ActorBean> implements CommandHandler {
     private static final double ZERO = 0;
 
+    private RoleEnum role;
+
     public ActorManager(RoleEnum role) throws ManagerInitializationException {
         try {
             this.repository = ActorSqlRepositoryFactory.getRepository(role);
+            this.role = role;
         } catch (RepositoryInitializationException e) {
             throw new ManagerInitializationException(e);
         }
@@ -52,9 +57,35 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
                 status = updateProfile(request);
                 break;
             }
+            case GET_OFFERS: {
+                status = getOffers(request);
+                break;
+            }
+            case REQUEST_DELIVERY:{
+                status = requestDelivery(request);
+                break;
+            }
             default: {
                 throw new ManagerOperationException("Unexpected command");
             }
+        }
+        return status;
+    }
+
+    private boolean requestDelivery(HttpServletRequest request) throws ManagerOperationException {
+        DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
+        long id = role == RoleEnum.COURIER? delivery.getCourierId() : delivery.getClientId();
+        Specification<ActorBean, PreparedStatement, Connection> specification = ActorIdSqlSpecificationFactory.getSpecification(role, id);
+        boolean status = false;
+        try {
+            Optional< List<ActorBean> > optionalCouriers = repository.find(specification);
+            if (optionalCouriers.isPresent()){
+                ActorBean courier = optionalCouriers.get().get(0);
+                request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, courier);
+                status = true;
+            }
+        } catch (RepositoryOperationException e) {
+            throw new ManagerOperationException(e);
         }
         return status;
     }
@@ -132,9 +163,28 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
         return status;
     }
 
-    private String getActorAttribute(HttpServletRequest request){
-        HttpSession session = request.getSession();
-        RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
-        return role == RoleEnum.CLIENT ? PageAttributesNameProvider.CLIENT_ATTRIBUTE : PageAttributesNameProvider.COURIER_ATTRIBUTE;
+    private boolean getOffers(HttpServletRequest request) throws ManagerOperationException {
+        List<OfferBean> offers = (List<OfferBean>) request.getAttribute(RequestAttributesNameProvider.OFFER_LIST_ATTRIBUTE);
+        List<ActorBean> actors = new LinkedList<>();
+        for (OfferBean offer : offers){
+            Specification<ActorBean, PreparedStatement, Connection> spec =
+                    ActorIdSqlSpecificationFactory.getSpecification(RoleEnum.COURIER, offer.getCourierId());
+            try {
+                Optional<List<ActorBean>> optionalActors = repository.find(spec);
+                if (optionalActors.isPresent()){
+                    ActorBean courier = optionalActors.get().get(0);
+                    actors.add(courier);
+                }else{
+                    offers.remove(offer);
+                }
+            } catch (RepositoryOperationException e) {
+                throw new ManagerOperationException(e);
+            }
+        }
+        request.setAttribute(RequestAttributesNameProvider.OFFER_LIST_ATTRIBUTE, offers);
+        request.setAttribute(RequestAttributesNameProvider.ACTOR_LIST_ATTRIBUTE, actors);
+        return true;
     }
 }
+
+

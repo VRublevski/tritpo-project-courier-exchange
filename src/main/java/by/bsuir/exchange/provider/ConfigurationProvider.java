@@ -10,7 +10,7 @@ public class ConfigurationProvider{ //FIXME redirect
     public static final String REGISTER_PAGE_PATH = "REGISTER_PAGE_PATH";
     public static final String DELIVERIES_PAGE_PATH = "DELIVERIES_PAGE_PATH";
     public static final String COURIER_PAGE_PATH = "COURIER_PAGE_PATH";
-    public static final String CABINET_PAGE_PATH = "CABINET_PAGE_PATH";
+    public static final String PROFILE_PAGE_PATH = "PROFILE_PAGE_PATH";
     public static final String ERROR_PAGE_PATH = "ERROR_PAGE_PATH";
     public static final String EDIT_PROFILE_PAGE_PATH = "EDIT_PROFILE_PAGE_PATH";
     public static final String OFFERS_PAGE_PATH = "OFFERS_PAGE_PATH";

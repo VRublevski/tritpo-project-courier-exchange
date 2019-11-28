@@ -1,5 +1,6 @@
 package by.bsuir.exchange.manager;
 
+import by.bsuir.exchange.bean.DeliveryBean;
 import by.bsuir.exchange.bean.OfferBean;
 import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
@@ -19,7 +20,6 @@ import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,10 +51,28 @@ public class OfferManager extends AbstractManager<OfferBean> implements CommandH
                     status = getOffers(request);
                     break;
                 }
+                case REQUEST_DELIVERY: {
+                    status = requestDelivery(request);
+                    break;
+                }
                 default: throw new ManagerOperationException("Unsupported command");
             }
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
+        }
+        return status;
+    }
+
+    private boolean requestDelivery(HttpServletRequest request) throws RepositoryOperationException {
+        DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
+        long courierId = delivery.getCourierId();
+        Specification<OfferBean, PreparedStatement, Connection> specification = new OfferByCourierIdSpecification(courierId);
+        Optional<List<OfferBean>> optionalOffers = repository.find(specification);
+        boolean status = false;
+        if (optionalOffers.isPresent()){
+            OfferBean offer = optionalOffers.get().get(0);
+            request.setAttribute(RequestAttributesNameProvider.OFFER_ATTRIBUTE, offer);
+            status = true;
         }
         return status;
     }
