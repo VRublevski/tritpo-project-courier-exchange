@@ -13,12 +13,14 @@ public class Command {
     private CommandEnum tag;
     private String successPage;
     private String failurePage;
+    private boolean redirect;
 
-    public Command(CommandHandler handler, CommandEnum tag, String successPage, String failurePage) {
+    public Command(CommandHandler handler, CommandEnum tag, String successPage, String failurePage, boolean redirect) {
         this.handler = handler;
         this.tag = tag;
         this.successPage = successPage;
         this.failurePage = failurePage;
+        this.redirect = redirect;
     }
 
     public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandOperationException {
@@ -31,4 +33,7 @@ public class Command {
         return success? successPage : failurePage;
     }
 
+    public boolean isRedirect() {
+        return redirect;
+    }
 }

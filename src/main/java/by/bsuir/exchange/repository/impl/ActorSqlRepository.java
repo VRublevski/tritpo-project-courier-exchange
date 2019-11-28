@@ -86,7 +86,6 @@ public class ActorSqlRepository extends SqlRepository<ActorBean> {
     @Override
     public void update(ActorBean entity) throws RepositoryOperationException {
         try {
-            GlobalConnectionPool pool = GlobalConnectionPool.getInstance();
             Connection connection = pool.getConnection();
 
             PreparedStatement statement = connection.prepareStatement(updateTemplate);
@@ -96,7 +95,7 @@ public class ActorSqlRepository extends SqlRepository<ActorBean> {
             statement.setLong(4, entity.getId());
             statement.executeUpdate();
             pool.releaseConnection(connection);
-        }catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+        }catch (PoolTimeoutException | SQLException | PoolOperationException e) {
             throw new RepositoryOperationException(e);
         }
     }

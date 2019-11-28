@@ -55,10 +55,30 @@ public class OfferManager extends AbstractManager<OfferBean> implements CommandH
                     status = requestDelivery(request);
                     break;
                 }
+                case FINISH_DELIVERY: {
+                    status = finishDelivery(request);
+                    break;
+                }
                 default: throw new ManagerOperationException("Unsupported command");
             }
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
+        }
+        return status;
+    }
+
+    private boolean finishDelivery(HttpServletRequest request) throws RepositoryOperationException {
+        DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
+        Specification<OfferBean, PreparedStatement, Connection> specification =
+                new OfferByCourierIdSpecification(delivery.getCourierId());
+        Optional< List<OfferBean> > optionalOffers = repository.find(specification);
+        boolean status;
+        if (optionalOffers.isPresent()){
+            OfferBean offer = optionalOffers.get().get(0);
+            request.setAttribute(RequestAttributesNameProvider.OFFER_ATTRIBUTE, offer);
+            status = true;
+        }else {
+            status = false;
         }
         return status;
     }

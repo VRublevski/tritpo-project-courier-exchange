@@ -35,14 +35,21 @@ public class Controller extends HttpServlet implements Servlet {
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String page;
+        boolean redirect = false;
         try {
             Command command = CommandFactory.getCommand(request);
             page = command.execute(request, response);
+            redirect = command.isRedirect();
         } catch (CommandOperationException | CommandInitializationException e) {
             page = ConfigurationProvider.getProperty(ConfigurationProvider.ERROR_PAGE_PATH);
         }
 
-        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(page);
-        dispatcher.forward(request, response);
+        if (redirect){
+            String url = String.format("%s%s", request.getContextPath(), page);
+            response.sendRedirect(url);
+        }else{
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(page);
+            dispatcher.forward(request, response);
+        }
     }
 }

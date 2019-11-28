@@ -26,6 +26,10 @@ public class DeliveryBean implements Markable{
         this.courierFinished = courierFinished;
     }
 
+    public boolean isFinished(){
+        return clientFinished && courierFinished;
+    }
+
     public long getId() {
         return id;
     }

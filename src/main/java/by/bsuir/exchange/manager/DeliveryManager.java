@@ -101,28 +101,22 @@ public class DeliveryManager extends AbstractManager<DeliveryBean> implements Co
     }
 
     private boolean finishDelivery(HttpServletRequest request) throws RepositoryOperationException {
-        HttpSession session = request.getSession();
-        RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
-        long firstId = (long) session.getAttribute(SessionAttributesNameProvider.ID);
-        String secondIdString = request.getParameter("delivery");
-        long secondId = Long.parseLong(secondIdString);
-        if (role == RoleEnum.COURIER){
-            long tmp = firstId + secondId;
-            firstId = tmp - firstId;
-            secondId = tmp - firstId;
-        }
-        DeliveryByActorIdSpecification specification = new DeliveryByActorIdSpecification(firstId, secondId);
-        DeliveryBean delivery;
+        DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
+        DeliveryByActorIdSpecification specification =
+                new DeliveryByActorIdSpecification(delivery.getClientId(), delivery.getCourierId());
         boolean status;
         Optional< List< DeliveryBean > > optionalDeliveries = repository.find(specification);
         if (optionalDeliveries.isPresent()){
             delivery = optionalDeliveries.get().get(0);
+            HttpSession session = request.getSession();
+            RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
             if (role == RoleEnum.CLIENT) {
                 delivery.setClientFinished(true);
             } else {
                 delivery.setCourierFinished(true);
             }
             repository.update(delivery);
+            request.setAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE, delivery);
             status = true;
         }else{
             status = false;

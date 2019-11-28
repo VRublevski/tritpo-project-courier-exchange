@@ -52,7 +52,7 @@ public class CommandFactory {
         successPages[CommandEnum.REQUEST_DELIVERY.ordinal()] = ConfigurationProvider.getProperty(PROFILE_PAGE_PATH);
         failurePages[CommandEnum.REQUEST_DELIVERY.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
 
-        successPages[CommandEnum.FINISH_DELIVERY.ordinal()] = ConfigurationProvider.getProperty(DELIVERIES_PAGE_PATH);
+        successPages[CommandEnum.FINISH_DELIVERY.ordinal()] = "/controller?command=get_deliveries";
         failurePages[CommandEnum.FINISH_DELIVERY.ordinal()] = ConfigurationProvider.getProperty(PROFILE_PAGE_PATH);
 
         successPages[CommandEnum.GET_DELIVERIES.ordinal()] = ConfigurationProvider.getProperty(DELIVERIES_PAGE_PATH);
@@ -91,7 +91,12 @@ public class CommandFactory {
             successPage = successPages[commandEnum.ordinal()];
             failurePage = failurePages[commandEnum.ordinal()];
         }
-        return new Command(handler, commandEnum, successPage, failurePage);
+        boolean redirect = isRedirect(commandEnum);
+        return new Command(handler, commandEnum, successPage, failurePage, redirect);
+    }
+
+    private static boolean isRedirect(CommandEnum commandEnum) {
+        return commandEnum == CommandEnum.FINISH_DELIVERY;
     }
 
     private static boolean isSamePage(CommandEnum command){

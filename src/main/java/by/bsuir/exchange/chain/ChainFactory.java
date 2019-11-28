@@ -9,6 +9,7 @@ import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.manager.*;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
+import by.bsuir.exchange.manager.exception.ManagerOperationException;
 import by.bsuir.exchange.provider.PageAttributesNameProvider;
 import by.bsuir.exchange.provider.RequestAttributesNameProvider;
 import by.bsuir.exchange.provider.SessionAttributesNameProvider;
@@ -17,6 +18,7 @@ import by.bsuir.exchange.validator.OfferValidator;
 import by.bsuir.exchange.validator.UserValidator;
 import org.apache.commons.beanutils.BeanUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 
@@ -46,6 +48,7 @@ public class ChainFactory { //Load on servlet initialization
 
     /*Transactional*/
     private static CommandHandler registerTransaction;
+    private static CommandHandler finishDeliveryTransaction;
 
     /*Validators*/
     private static CommandHandler userBeanValidator;
@@ -115,7 +118,7 @@ public class ChainFactory { //Load on servlet initialization
                 break;
             }
             case FINISH_DELIVERY: {
-                chain = deliveryManager;
+                chain = finishDeliveryTransaction;
                 break;
             }
             default:{
@@ -206,7 +209,7 @@ public class ChainFactory { //Load on servlet initialization
 
 
     private static void initTransactional() {
-        CommandHandler clientTransactional = (request, command1) -> {
+        CommandHandler clientRegisterTransactional = (request, command1) -> {
             HttpSessionManager sessionManager = new HttpSessionManager();
             ActorManager actorManager = new ActorManager(RoleEnum.CLIENT);
             AbstractManager<UserBean> combination = sessionManager.combine(actorManager);
@@ -214,7 +217,7 @@ public class ChainFactory { //Load on servlet initialization
             combination.closeManager();
             return status;
         };
-        CommandHandler courierTransactional = (request, command1) -> {
+        CommandHandler courierRegisterTransactional = (request, command1) -> {
             HttpSessionManager sessionManager = new HttpSessionManager();
             ActorManager actorManager = new ActorManager(RoleEnum.COURIER);
             AbstractManager<UserBean> combination = sessionManager.combine(actorManager);
@@ -222,12 +225,23 @@ public class ChainFactory { //Load on servlet initialization
             combination.closeManager();
             return status;
         };
-        CommandHandler branch = clientTransactional.branch(isCourierRequest, courierTransactional);
+        CommandHandler branch = clientRegisterTransactional.branch(isCourierRequest, courierRegisterTransactional);
         registerTransaction = userBeanCreator
                             .chain(userBeanValidator)
                             .chain(actorBeanCreator)
                             .chain(actorBeanValidator)
                             .chain(branch);
+        CommandHandler deliveryTransaction = (request, command) -> {
+            DeliveryManager deliveryManager = new DeliveryManager();
+            ActorManager clientManager = new ActorManager(RoleEnum.CLIENT);
+            ActorManager courierManager = new ActorManager(RoleEnum.COURIER);
+            AbstractManager<DeliveryBean> deliveryClientCombination = deliveryManager.combine(clientManager);
+            AbstractManager<DeliveryBean> deliveryActorCombination = deliveryClientCombination.combine(courierManager);
+            boolean status = deliveryActorCombination.handle(request, command);
+            deliveryActorCombination.closeManager();
+            return status;
+        };
+        finishDeliveryTransaction = deliveryBeanCreator.chain(offerManager).chain(deliveryTransaction);
     }
 
     private static void initBranches() {

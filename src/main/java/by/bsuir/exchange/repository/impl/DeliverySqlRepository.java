@@ -3,6 +3,7 @@ package by.bsuir.exchange.repository.impl;
 import by.bsuir.exchange.bean.DeliveryBean;
 import by.bsuir.exchange.pool.GlobalConnectionPool;
 import by.bsuir.exchange.pool.exception.PoolInitializationException;
+import by.bsuir.exchange.pool.exception.PoolOperationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
 import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
@@ -59,7 +60,6 @@ public class DeliverySqlRepository extends SqlRepository<DeliveryBean> {
     public void add(DeliveryBean bean) throws RepositoryOperationException {
         String template = "INSERT INTO deliveries (client_id, client_finished, courier_id, courier_finished) VALUES (?, ?, ?, ?)";
         try{
-            GlobalConnectionPool pool = GlobalConnectionPool.getInstance();
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
             statement.setLong(1, bean.getClientId());
@@ -75,7 +75,7 @@ public class DeliverySqlRepository extends SqlRepository<DeliveryBean> {
                 bean.setId(generatedKeys.getLong(1));
             }
             pool.releaseConnection(connection);
-        } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+        } catch (PoolTimeoutException | SQLException | PoolOperationException e) {
             throw new RepositoryOperationException(e);
         }
     }
@@ -84,7 +84,6 @@ public class DeliverySqlRepository extends SqlRepository<DeliveryBean> {
     public void update(DeliveryBean entity) throws RepositoryOperationException {
         String template = "UPDATE deliveries SET client_finished=?, courier_finished=? WHERE id=?";
         try{
-            GlobalConnectionPool pool = GlobalConnectionPool.getInstance();
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template);
             statement.setBoolean(1, entity.getClientFinished());
@@ -92,7 +91,7 @@ public class DeliverySqlRepository extends SqlRepository<DeliveryBean> {
             statement.setLong(3, entity.getId());
             statement.executeUpdate();
             pool.releaseConnection(connection);
-        } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {
+        } catch (PoolTimeoutException | SQLException | PoolOperationException e) {
             throw new RepositoryOperationException(e);
         }
     }

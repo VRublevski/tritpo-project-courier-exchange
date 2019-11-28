@@ -70,6 +70,10 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
                     status = requestDelivery(request);
                     break;
                 }
+                case FINISH_DELIVERY: {
+                    status = finishDelivery(request);
+                    break;
+                }
                 default: {
                     throw new ManagerOperationException("Unexpected command");
                 }
@@ -78,6 +82,30 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
             throw new ManagerOperationException(e);
         }
         return status;
+    }
+    //FIXME multiple repository operations
+    private boolean finishDelivery(HttpServletRequest request) throws RepositoryOperationException {
+        DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
+        if (delivery.isFinished()){
+            long id = role == RoleEnum.COURIER? delivery.getCourierId() : delivery.getClientId();
+            Specification<ActorBean, PreparedStatement, Connection> specification =
+                    ActorIdSqlSpecificationFactory.getSpecification(role, id);
+            Optional<List<ActorBean>> optionalActors = repository.find(specification);
+            if (optionalActors.isPresent()){
+                OfferBean offer = (OfferBean)request.getAttribute(RequestAttributesNameProvider.OFFER_ATTRIBUTE);
+                double price = offer.getPrice();
+                ActorBean actor = optionalActors.get().get(0);
+                double balance = actor.getBalance();
+                if (role == RoleEnum.CLIENT){
+                    balance -= price;
+                }else {
+                    balance += price;
+                }
+                actor.setBalance(balance);
+                repository.update(actor);
+            }
+        }
+        return true;
     }
 
     private boolean getDeliveries(HttpServletRequest request) throws RepositoryOperationException {
