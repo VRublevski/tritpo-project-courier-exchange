@@ -33,8 +33,8 @@ class Permission{
 }
 
 public class PermissionChecker {
-    private final static int N_COMMANDS = 10;
-    private final static int N_RESOURCES = 4;
+    private final static int N_COMMANDS = 12;
+    private final static int N_RESOURCES = 5;
     private final static int N_ROLES = 4;
 
     private Permission[][] roleCompetencies;
@@ -52,6 +52,7 @@ public class PermissionChecker {
             addLoginCommandCompetencies();
             addRegisterCommandCompetencies();
             addGetCourierCommandCompetencies();
+            addGetOffersCommandCompetencies();
             addUpdateProfileClientCommandCompetencies();
             addUpdateProfileCourierCommandCompetencies();
 
@@ -90,6 +91,12 @@ public class PermissionChecker {
         instance.commandCompetencies[i][ResourceEnum.COURIER.ordinal()] = new Permission(courierPermissions);
     }
 
+    private static void addGetOffersCommandCompetencies(){
+        int i = CommandEnum.GET_OFFERS.ordinal();
+        EnumSet<PermissionEnum> courierPermissions = EnumSet.of(READ);
+        instance.commandCompetencies[i][ResourceEnum.OFFER.ordinal()] = new Permission(courierPermissions);
+    }
+
     private static void addUpdateProfileClientCommandCompetencies(){
         int i = CommandEnum.UPDATE_PROFILE_CLIENT.ordinal();
         EnumSet<PermissionEnum> clientPermissions = EnumSet.of(READ, UPDATE);
@@ -108,6 +115,8 @@ public class PermissionChecker {
         instance.roleCompetencies[i][ResourceEnum.COURIER.ordinal()] = new Permission(courierPermissions);
         EnumSet<PermissionEnum> clientPermissions = EnumSet.of(READ, UPDATE);
         instance.roleCompetencies[i][ResourceEnum.CLIENT.ordinal()] = new Permission(clientPermissions);
+        EnumSet<PermissionEnum> offersPermissions = EnumSet.of(READ);
+        instance.roleCompetencies[i][ResourceEnum.OFFER.ordinal()] = new Permission(offersPermissions);
     }
 
 

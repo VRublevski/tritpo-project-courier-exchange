@@ -1,6 +1,7 @@
 package by.bsuir.exchange.chain;
 
 import by.bsuir.exchange.bean.ActorBean;
+import by.bsuir.exchange.bean.DeliveryBean;
 import by.bsuir.exchange.bean.OfferBean;
 import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.checker.PermissionChecker;
@@ -29,6 +30,7 @@ public class ChainFactory { //Load on servlet initialization
     private static CommandHandler userBeanCreator;
     private static CommandHandler actorBeanCreator;
     private static CommandHandler offerBeanCreator;
+    private static CommandHandler deliveryBeanCreator;
 
     /*Branches*/
     private static CommandHandler sessionBranch;
@@ -95,6 +97,10 @@ public class ChainFactory { //Load on servlet initialization
                 chain = permissionChecker.chain(courierManager);
                 break;
             }
+            case GET_OFFERS: {
+                chain = permissionChecker.chain(offerManager).chain(courierManager);
+                break;
+            }
             case GET_DELIVERIES: {  //FIXME check for permissions
                 chain = deliveryManager;
                 break;
@@ -104,7 +110,7 @@ public class ChainFactory { //Load on servlet initialization
                 break;
             }
             case REQUEST_DELIVERY: {
-                chain = permissionChecker.chain(deliveryManager);
+                chain = permissionChecker.chain(deliveryBeanCreator).chain(deliveryManager);
                 break;
             }
             case FINISH_DELIVERY: {
@@ -243,6 +249,12 @@ public class ChainFactory { //Load on servlet initialization
         offerBeanCreator = (request, command) -> {
             OfferBean offer = new OfferBean();
             return getBeanCreator(offer, RequestAttributesNameProvider.OFFER_ATTRIBUTE).handle(request, command);
+        };
+
+
+        deliveryBeanCreator = (request, command) -> {
+            DeliveryBean delivery = new DeliveryBean();
+            return getBeanCreator(delivery, RequestAttributesNameProvider.DELIVERY_ATTRIBUTE).handle(request, command);
         };
     }
 }

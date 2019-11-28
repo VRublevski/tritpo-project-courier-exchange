@@ -11,12 +11,15 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.impl.OfferSqlRepository;
 import by.bsuir.exchange.specification.Specification;
+import by.bsuir.exchange.specification.offer.OfferAllSpecification;
 import by.bsuir.exchange.specification.offer.OfferByCourierIdSpecification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,17 +38,33 @@ public class OfferManager extends AbstractManager<OfferBean> implements CommandH
     public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException {
         HttpSession session = request.getSession();
         long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
-        boolean status = false;
+        boolean status;
         try{
-            if (command == CommandEnum.UPDATE_PROFILE_COURIER){
-                Specification<OfferBean, PreparedStatement, Connection> specification = new OfferByCourierIdSpecification(id);
-                Optional<List<OfferBean>> optionalOffers = repository.find(specification);
-                status = optionalOffers.isPresent()? update(request, optionalOffers.get().get(0)) : add(request, id);
+            switch (command){
+                case UPDATE_PROFILE_COURIER:{
+                    Specification<OfferBean, PreparedStatement, Connection> specification = new OfferByCourierIdSpecification(id);
+                    Optional<List<OfferBean>> optionalOffers = repository.find(specification);
+                    status = optionalOffers.isPresent()? update(request, optionalOffers.get().get(0)) : add(request, id);
+                    break;
+                }
+                case GET_OFFERS: {
+                    status = getOffers(request);
+                    break;
+                }
+                default: throw new ManagerOperationException("Unsupported command");
             }
         } catch (RepositoryOperationException e) {
             throw new ManagerOperationException(e);
         }
         return status;
+    }
+
+    private boolean getOffers(HttpServletRequest request) throws RepositoryOperationException {
+        Specification<OfferBean, PreparedStatement, Connection> specification = new OfferAllSpecification();
+        Optional< List<OfferBean> > optionalOffers = repository.find(specification);
+        List<OfferBean> result = optionalOffers.orElse(Collections.emptyList());
+        request.setAttribute(RequestAttributesNameProvider.OFFER_LIST_ATTRIBUTE, result);
+        return true;
     }
 
     private boolean add(HttpServletRequest request, long courierId) throws RepositoryOperationException {

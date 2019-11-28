@@ -17,7 +17,7 @@ import static by.bsuir.exchange.provider.ConfigurationProvider.*;
 import static by.bsuir.exchange.provider.PageAttributesNameProvider.COMMAND;
 
 public class CommandFactory {
-    private static final int N_COMMANDS = 9;
+    private static final int N_COMMANDS = 12;
 
     private static Map<String, String> pageConstants;
 
@@ -60,6 +60,9 @@ public class CommandFactory {
 
         successPages[CommandEnum.GET_IMAGE.ordinal()] = ConfigurationProvider.getProperty(GET_IMAGE_PATH);
         failurePages[CommandEnum.GET_IMAGE.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
+
+        successPages[CommandEnum.GET_OFFERS.ordinal()] = ConfigurationProvider.getProperty(OFFERS_PAGE_PATH);
+        failurePages[CommandEnum.GET_OFFERS.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
     }
 
     public static Command getCommand(HttpServletRequest request) throws CommandInitializationException {

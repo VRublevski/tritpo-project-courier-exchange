@@ -6,10 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/jsp/couriers.jsp", "/jsp/deliveries.jsp"})
+@WebFilter(urlPatterns = {"/jsp/couriers.jsp", "/jsp/deliveries.jsp", "/jsp/offers.jsp"})
 public class PageFilter implements Filter{
     private static final String COURIERS_JSP = "/jsp/couriers.jsp";
     private static final String DELIVERIES_JSP = "/jsp/deliveries.jsp";
+    private static final String OFFERS_JSP = "/jsp/offers.jsp";
     private static final String ERROR_JSP = "/jsp/error.jsp";
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -25,6 +26,10 @@ public class PageFilter implements Filter{
             }
             case DELIVERIES_JSP : {
                 newServlet = "/controller?command=get_deliveries";
+                break;
+            }
+            case OFFERS_JSP : {
+                newServlet = "/controller?command=get_offers";
                 break;
             }
             default:{
