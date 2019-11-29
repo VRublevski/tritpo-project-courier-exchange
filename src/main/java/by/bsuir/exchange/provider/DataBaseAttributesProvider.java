@@ -37,6 +37,7 @@ public class DataBaseAttributesProvider {
     public static final String CLIENT_FINISHED = "CLIENT_FINISHED";
     public static final String COURIER_ID = "COURIER_ID";
     public static final String COURIER_FINISHED = "COURIER_FINISHED";
+    public static final String ARCHIVAL = "ARCHIVAL";
 
     public static final String OFFER_TABLE = "offer";
     public static final String TRANSPORT = "TRANSPORT";
@@ -71,6 +72,7 @@ public class DataBaseAttributesProvider {
         deliveryColumns.put(CLIENT_FINISHED, "clientFinished");
         deliveryColumns.put(COURIER_ID, "courierId");
         deliveryColumns.put(COURIER_FINISHED, "courierFinished");
+        deliveryColumns.put(ARCHIVAL, "archival");
 
         offerColumns.put(ID, "id");
         offerColumns.put(PRICE, "price");

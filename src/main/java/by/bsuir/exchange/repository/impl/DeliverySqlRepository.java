@@ -46,7 +46,11 @@ public class DeliverySqlRepository extends SqlRepository<DeliveryBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             boolean courierFinised = resultSet.getBoolean(columnName);
 
-            DeliveryBean courier = new DeliveryBean(id, clientId, clientFinished, courierId, courierFinised);
+            column = DataBaseAttributesProvider.ARCHIVAL;
+            columnName = DataBaseAttributesProvider.getColumnName(table, column);
+            boolean archival = resultSet.getBoolean(columnName);
+
+            DeliveryBean courier = new DeliveryBean(id, clientId, clientFinished, courierId, courierFinised, archival);
             deliveries.add(courier);
         }
 

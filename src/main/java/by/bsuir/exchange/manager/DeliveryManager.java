@@ -85,6 +85,7 @@ public class DeliveryManager extends AbstractManager<DeliveryBean> implements Co
         DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
         delivery.setCourierFinished(false);
         delivery.setClientFinished(false);
+        delivery.setArchival(false);
 
         OfferBean offer = (OfferBean) request.getAttribute(RequestAttributesNameProvider.OFFER_ATTRIBUTE);
         double price = offer.getPrice();
@@ -114,6 +115,9 @@ public class DeliveryManager extends AbstractManager<DeliveryBean> implements Co
                 delivery.setClientFinished(true);
             } else {
                 delivery.setCourierFinished(true);
+            }
+            if (delivery.isFinished()){
+                delivery.setArchival(true);
             }
             repository.update(delivery);
             request.setAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE, delivery);

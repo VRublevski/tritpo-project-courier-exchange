@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class DeliveryByCourierIdSpecification implements Specification<DeliveryBean, PreparedStatement, Connection> {
-    private final static String QUERY = "SELECT * FROM deliveries WHERE courier_id = ?";
+    private final static String QUERY = "SELECT * FROM deliveries WHERE courier_id = ? AND archival=0";
 
     private Connection connection;
     private long courierId;

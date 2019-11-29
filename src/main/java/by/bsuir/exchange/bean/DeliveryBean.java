@@ -6,24 +6,19 @@ public class DeliveryBean implements Markable{
     private boolean clientFinished;
     private long courierId;
     private boolean courierFinished;
-
+    private boolean archival;
 
     public DeliveryBean() {
     }
 
-    public DeliveryBean(long clientId, boolean clientFinished, long courierId, boolean courierFinished) {
-        this.clientId = clientId;
-        this.clientFinished = clientFinished;
-        this.courierId = courierId;
-        this.courierFinished = courierFinished;
-    }
-
-    public DeliveryBean(long id, long clientId, boolean clientFinished, long courierId, boolean courierFinished) {
+    public DeliveryBean(long id, long clientId, boolean clientFinished,
+                        long courierId, boolean courierFinished, boolean archival) {
         this.id = id;
         this.clientId = clientId;
         this.clientFinished = clientFinished;
         this.courierId = courierId;
         this.courierFinished = courierFinished;
+        this.archival = archival;
     }
 
     public boolean isFinished(){
@@ -68,5 +63,13 @@ public class DeliveryBean implements Markable{
 
     public void setCourierFinished(boolean courierFinished) {
         this.courierFinished = courierFinished;
+    }
+
+    public boolean isArchival() {
+        return archival;
+    }
+
+    public void setArchival(boolean archival) {
+        this.archival = archival;
     }
 }
