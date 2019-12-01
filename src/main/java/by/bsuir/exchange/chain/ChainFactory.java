@@ -80,6 +80,10 @@ public class ChainFactory { //Load on servlet initialization
                 chain = permissionChecker.chain(sessionBranch).chain(actorBranch);
                 break;
             }
+            case LOGOUT: {
+                chain = permissionChecker.chain(sessionManager);
+                break;
+            }
             case REGISTER: {
                 chain = permissionChecker.chain(registerTransaction);
                 break;

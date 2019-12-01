@@ -45,7 +45,8 @@ public class Controller extends HttpServlet implements Servlet {
         }
 
         if (redirect){
-            String url = String.format("%s%s", request.getContextPath(), page);
+            String jsp = page.replace("/WEB-INF", "");
+            String url = String.format("%s%s", request.getContextPath(), jsp);
             response.sendRedirect(url);
         }else{
             RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(page);

@@ -42,6 +42,12 @@ public class HttpSessionManager extends AbstractManager<UserBean> implements Com
                 status = login(request, user);
                 break;
             }
+            case LOGOUT: {
+                HttpSession session = request.getSession();
+                session.invalidate();
+                status = true;
+                break;
+            }
             case REGISTER: {
                 String attribute = RequestAttributesNameProvider.USER_ATTRIBUTE;
                 UserBean user = (UserBean) request.getAttribute(attribute);

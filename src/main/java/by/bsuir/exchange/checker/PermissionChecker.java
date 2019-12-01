@@ -33,7 +33,7 @@ class Permission{
 }
 
 public class PermissionChecker {
-    private final static int N_COMMANDS = 12;
+    private final static int N_COMMANDS = 14;
     private final static int N_RESOURCES = 5;
     private final static int N_ROLES = 4;
 
@@ -50,6 +50,7 @@ public class PermissionChecker {
             instance.roleCompetencies = new Permission[N_ROLES][N_RESOURCES];
 
             addLoginCommandCompetencies();
+            addLogoutCommandCompetencies();
             addRegisterCommandCompetencies();
             addGetCourierCommandCompetencies();
             addGetOffersCommandCompetencies();
@@ -64,12 +65,19 @@ public class PermissionChecker {
         return instance;
     }
 
-
     private static void addLoginCommandCompetencies(){
         int i = CommandEnum.LOGIN.ordinal();
         EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(CREATE, UPDATE);
         instance.commandCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
     }
+
+
+    private static void addLogoutCommandCompetencies() {
+        int i = CommandEnum.LOGOUT.ordinal();
+        EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(DELETE);
+        instance.commandCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
+    }
+
     /*Fixme admin creation*/
     private static void addGuestCompetencies(){
         int i = RoleEnum.GUEST.ordinal();
@@ -117,13 +125,18 @@ public class PermissionChecker {
         instance.roleCompetencies[i][ResourceEnum.CLIENT.ordinal()] = new Permission(clientPermissions);
         EnumSet<PermissionEnum> offersPermissions = EnumSet.of(READ);
         instance.roleCompetencies[i][ResourceEnum.OFFER.ordinal()] = new Permission(offersPermissions);
+        EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(DELETE);
+        instance.roleCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
     }
+
 
 
     private static void addCourierCompetencies() {
         int i = RoleEnum.COURIER.ordinal();
         EnumSet<PermissionEnum> courierPermissions = EnumSet.of(READ, UPDATE);
         instance.roleCompetencies[i][ResourceEnum.COURIER.ordinal()] = new Permission(courierPermissions);
+        EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(DELETE);
+        instance.roleCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
     }
 
     public boolean checkPermission(RoleEnum role, CommandEnum command){

@@ -2,6 +2,7 @@ package by.bsuir.exchange.command;
 
 public enum CommandEnum {
     LOGIN,
+    LOGOUT,
     REGISTER,
     UPDATE_PROFILE_CLIENT,
     UPDATE_PROFILE_COURIER,

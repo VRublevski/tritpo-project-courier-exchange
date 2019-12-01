@@ -17,7 +17,7 @@ import static by.bsuir.exchange.provider.ConfigurationProvider.*;
 import static by.bsuir.exchange.provider.PageAttributesNameProvider.COMMAND;
 
 public class CommandFactory {
-    private static final int N_COMMANDS = 13;
+    private static final int N_COMMANDS = 14;
 
     private static Map<String, String> pageConstants;
 
@@ -36,6 +36,9 @@ public class CommandFactory {
 
         successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(EDIT_PROFILE_PAGE_PATH);
         failurePages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(LOGIN_PAGE_PATH);
+
+        successPages[CommandEnum.LOGOUT.ordinal()] = ConfigurationProvider.getProperty(LOGIN_PAGE_PATH);
+        failurePages[CommandEnum.LOGOUT.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
 
         successPages[CommandEnum.GET_PROFILE.ordinal()] = ConfigurationProvider.getProperty(PROFILE_PAGE_PATH);
         failurePages[CommandEnum.GET_PROFILE.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
@@ -99,7 +102,7 @@ public class CommandFactory {
     }
 
     private static boolean isRedirect(CommandEnum commandEnum) {
-        return commandEnum == CommandEnum.FINISH_DELIVERY;
+        return commandEnum == CommandEnum.FINISH_DELIVERY || commandEnum == CommandEnum.LOGOUT;
     }
 
     private static boolean isSamePage(CommandEnum command){
