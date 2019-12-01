@@ -6,11 +6,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ActorValidator {
-    private static final String NAME_PATTERN = "^[A-Z][a-z]*$";
+    private static final String NAME_PATTERN = "^\\p{Lu}\\p{Ll}+$";
 
     public static boolean validate(ActorBean actorBean){
         boolean isValid = true;
-        if (actorBean.getName() != null){
+         if (actorBean.getName() != null){
             isValid &= validateName(actorBean);
         }
         if (actorBean.getSurname() != null){

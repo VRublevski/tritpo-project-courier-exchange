@@ -9,13 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.module.Configuration;
 
-@WebFilter(urlPatterns = {"/jsp/couriers.jsp", "/jsp/deliveries.jsp", "/jsp/offers.jsp", "/jsp/profile.jsp", "/jsp/editProfile.jsp"})
+@WebFilter(urlPatterns = {"/jsp/couriers.jsp", "/jsp/deliveries.jsp", "/jsp/offers.jsp", "/jsp/profile.jsp",
+        "/jsp/editProfile.jsp", "/jsp/register.jsp", "/jsp/login.jsp"})
 public class PageFilter implements Filter{
     private static final String COURIERS_JSP = "/jsp/couriers.jsp";
     private static final String DELIVERIES_JSP = "/jsp/deliveries.jsp";
     private static final String OFFERS_JSP = "/jsp/offers.jsp";
     private static final String PROFILE_JSP = "/jsp/profile.jsp";
     private static final String EDIT_PROFILE_JSP = "/jsp/editProfile.jsp";
+    private static final String REGISTER_JSP = "/jsp/register.jsp";
+    private static final String LOGIN_JSP = "/jsp/login.jsp";
     private static final String ERROR_JSP = "/jsp/error.jsp";
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -43,6 +46,14 @@ public class PageFilter implements Filter{
             }
             case EDIT_PROFILE_JSP:{
                 newServlet = ConfigurationProvider.getProperty(ConfigurationProvider.EDIT_PROFILE_PAGE_PATH);
+                break;
+            }
+            case REGISTER_JSP: {
+                newServlet = ConfigurationProvider.getProperty(ConfigurationProvider.REGISTER_PAGE_PATH);
+                break;
+            }
+            case LOGIN_JSP: {
+                newServlet = ConfigurationProvider.getProperty(ConfigurationProvider.LOGIN_PAGE_PATH);
                 break;
             }
             default:{
