@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebListener;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 @WebListener
 public class ContextListener implements ServletContextListener {
@@ -21,7 +22,7 @@ public class ContextListener implements ServletContextListener {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {
             Logger logger = LogManager.getRootLogger();
-            logger.fatal("Unable to load a sql driver");
+            logger.fatal("Unable to load a sql driver", e);
         }
 
         try {
@@ -35,13 +36,18 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        try {
-            String driverName = DataBaseAttributesProvider.getProperty(DataBaseAttributesProvider.DRIVER_NAME);
-            Driver driver = DriverManager.getDriver(driverName);
-            DriverManager.deregisterDriver(driver);
-        } catch (SQLException e) {
-            Logger logger = LogManager.getRootLogger();
-            logger.fatal("Unable to deregister a sql driver");
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            Driver driver = drivers.nextElement();
+            try {
+                DriverManager.deregisterDriver(driver);
+                Logger logger = LogManager.getRootLogger();
+                logger.info( String.format("deregistering jdbc driver: %s", driver));
+            } catch (SQLException e) {
+                Logger logger = LogManager.getRootLogger();
+                logger.fatal(String.format("Error deregistering driver %s", driver), e);
+            }
+
         }
     }
 }
