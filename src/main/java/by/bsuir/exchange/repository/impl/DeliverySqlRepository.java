@@ -62,7 +62,7 @@ public class DeliverySqlRepository extends SqlRepository<DeliveryBean> {
 
     @Override
     public void add(DeliveryBean bean) throws RepositoryOperationException {
-        String template = "INSERT INTO deliveries (client_id, client_finished, courier_id, courier_finished) VALUES (?, ?, ?, ?)";
+        String template = "INSERT INTO deliveries (client_id, client_finished, courier_id, courier_finished, archival) VALUES (?, ?, ?, ?, ?)";
         try{
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
@@ -70,6 +70,7 @@ public class DeliverySqlRepository extends SqlRepository<DeliveryBean> {
             statement.setBoolean(2, bean.getClientFinished());
             statement.setLong(3, bean.getCourierId());
             statement.setBoolean(4, bean.getCourierFinished());
+            statement.setBoolean(5, bean.getArchival());
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0){
                 throw new RepositoryOperationException("Unable to perform operation");

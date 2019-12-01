@@ -65,7 +65,7 @@ public class DeliveryBean implements Markable{
         this.courierFinished = courierFinished;
     }
 
-    public boolean isArchival() {
+    public boolean getArchival() {
         return archival;
     }
 

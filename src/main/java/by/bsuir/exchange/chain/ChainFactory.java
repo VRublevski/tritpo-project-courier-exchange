@@ -96,6 +96,11 @@ public class ChainFactory { //Load on servlet initialization
                 chain = sessionManager;
                 break;
             }
+            case GET_PROFILE: {  //FIXME check for permissions
+                CommandHandler branch = clientManager.branch(isCourierSession, courierManager);
+                chain = branch;
+                break;
+            }
             case GET_COURIERS: {
                 chain = permissionChecker.chain(courierManager);
                 break;

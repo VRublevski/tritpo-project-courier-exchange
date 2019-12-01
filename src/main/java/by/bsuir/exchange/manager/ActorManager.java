@@ -53,6 +53,10 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
                     status = login(request);
                     break;
                 }
+                case GET_PROFILE: {
+                    status = getProfile(request);
+                    break;
+                }
                 case UPDATE_PROFILE_COURIER:
                 case UPDATE_PROFILE_CLIENT: {
                     status = updateProfile(request);
@@ -83,7 +87,25 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
         }
         return status;
     }
-    //FIXME multiple repository operations
+
+    private boolean getProfile(HttpServletRequest request) throws RepositoryOperationException {
+        HttpSession session = request.getSession();
+        long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
+        Specification<ActorBean, PreparedStatement, Connection> specification =
+                ActorIdSqlSpecificationFactory.getSpecification(role, id);
+        Optional<List<ActorBean>> optionalActors = repository.find(specification);
+        boolean status;
+        if (optionalActors.isPresent()){
+            ActorBean actor = optionalActors.get().get(0);
+            request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, actor);
+            status = true;
+        }else{
+            status = false;
+        }
+        return status;
+    }
+
+
     private boolean finishDelivery(HttpServletRequest request) throws RepositoryOperationException {
         DeliveryBean delivery = (DeliveryBean) request.getAttribute(RequestAttributesNameProvider.DELIVERY_ATTRIBUTE);
         if (delivery.isFinished()){
