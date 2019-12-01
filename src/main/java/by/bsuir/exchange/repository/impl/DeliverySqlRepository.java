@@ -87,13 +87,14 @@ public class DeliverySqlRepository extends SqlRepository<DeliveryBean> {
 
     @Override
     public void update(DeliveryBean entity) throws RepositoryOperationException {
-        String template = "UPDATE deliveries SET client_finished=?, courier_finished=? WHERE id=?";
+        String template = "UPDATE deliveries SET client_finished=?, courier_finished=?, archival=? WHERE id=?";
         try{
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template);
             statement.setBoolean(1, entity.getClientFinished());
             statement.setBoolean(2, entity.getCourierFinished());
-            statement.setLong(3, entity.getId());
+            statement.setBoolean(3, entity.getArchival());
+            statement.setLong(4, entity.getId());
             statement.executeUpdate();
             pool.releaseConnection(connection);
         } catch (PoolTimeoutException | SQLException | PoolOperationException e) {
