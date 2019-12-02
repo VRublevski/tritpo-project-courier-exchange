@@ -34,7 +34,7 @@ public class CommandFactory {
         successPages = new String[N_COMMANDS];
         failurePages = new String[N_COMMANDS];
 
-        successPages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(EDIT_PROFILE_PAGE_PATH);
+        successPages[CommandEnum.LOGIN.ordinal()] = "/controller?command=get_profile";
         failurePages[CommandEnum.LOGIN.ordinal()] = ConfigurationProvider.getProperty(LOGIN_PAGE_PATH);
 
         successPages[CommandEnum.LOGOUT.ordinal()] = ConfigurationProvider.getProperty(LOGIN_PAGE_PATH);
@@ -69,6 +69,10 @@ public class CommandFactory {
 
         successPages[CommandEnum.GET_OFFERS.ordinal()] = ConfigurationProvider.getProperty(OFFERS_PAGE_PATH);
         failurePages[CommandEnum.GET_OFFERS.ordinal()] = ConfigurationProvider.getProperty(ERROR_PAGE_PATH);
+
+        successPages[CommandEnum.GET_USERS.ordinal()] = ConfigurationProvider.getProperty(ADMIN_PAGE_PATH);
+        failurePages[CommandEnum.GET_USERS.ordinal()] = ConfigurationProvider.getProperty(ADMIN_PAGE_PATH);
+
     }
 
     public static Command getCommand(HttpServletRequest request) throws CommandInitializationException {

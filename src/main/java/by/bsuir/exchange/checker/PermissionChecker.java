@@ -30,10 +30,21 @@ class Permission{
         return Objects.hash(permissions);
     }
 
+    public boolean granted(Permission other){
+        boolean status = true;
+        for (PermissionEnum permission : permissions){
+            if (!other.permissions.contains(permission) ){ //FIXME nullptr
+               status = false;
+               break;
+            }
+        }
+        return status;
+    }
+
 }
 
 public class PermissionChecker {
-    private final static int N_COMMANDS = 14;
+    private final static int N_COMMANDS = 15;
     private final static int N_RESOURCES = 5;
     private final static int N_ROLES = 4;
 
@@ -52,6 +63,7 @@ public class PermissionChecker {
             addLoginCommandCompetencies();
             addLogoutCommandCompetencies();
             addRegisterCommandCompetencies();
+            addGetUsersCommandCompetencies();
             addGetCourierCommandCompetencies();
             addGetOffersCommandCompetencies();
             addUpdateProfileClientCommandCompetencies();
@@ -60,9 +72,16 @@ public class PermissionChecker {
             addGuestCompetencies();
             addClientCompetencies();
             addCourierCompetencies();
+            addAdminCompetencies();
         }
 
         return instance;
+    }
+
+    private static void addGetUsersCommandCompetencies() {
+        int i = CommandEnum.GET_USERS.ordinal();
+        EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(READ);
+        instance.commandCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(sessionPermissions);
     }
 
     private static void addLoginCommandCompetencies(){
@@ -129,7 +148,11 @@ public class PermissionChecker {
         instance.roleCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
     }
 
-
+    private static void addAdminCompetencies(){
+        int i = RoleEnum.ADMIN.ordinal();
+        EnumSet<PermissionEnum> userPermissions = EnumSet.of(READ, UPDATE, DELETE);
+        instance.roleCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(userPermissions);
+    }
 
     private static void addCourierCompetencies() {
         int i = RoleEnum.COURIER.ordinal();
@@ -146,7 +169,12 @@ public class PermissionChecker {
             if (commandCompetencies[iCommand][j] == null){
                 continue;
             }
-            if (!commandCompetencies[iCommand][j].equals(roleCompetencies[iRole][j])){
+
+            if (roleCompetencies[iRole][j] == null){
+                return false;
+            }
+
+            if (!commandCompetencies[iCommand][j].granted(roleCompetencies[iRole][j])){
                 return false;
             }
         }

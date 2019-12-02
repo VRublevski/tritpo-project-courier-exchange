@@ -22,9 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ActorManager extends AbstractManager<ActorBean> implements CommandHandler {
     private static final double ZERO = 0;
@@ -51,6 +49,10 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
                 }
                 case LOGIN: {
                     status = login(request);
+                    break;
+                }
+                case GET_USERS: {
+                    status = getUsers(request);
                     break;
                 }
                 case GET_PROFILE: {
@@ -86,6 +88,31 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
             throw new ManagerOperationException(e);
         }
         return status;
+    }
+
+    private boolean getUsers(HttpServletRequest request) throws RepositoryOperationException {
+        List<UserBean> users = (List<UserBean>) request.getAttribute(RequestAttributesNameProvider.USER_LIST);
+        Map<Long, ActorBean> actors = (Map<Long, ActorBean>) request.getAttribute(RequestAttributesNameProvider.ACTOR_MAP_ATTRIBUTE);
+        if (actors == null){
+            actors = new HashMap<>();
+        }
+        for (Iterator<UserBean> iterator = users.iterator(); iterator.hasNext();){
+            UserBean user = iterator.next();
+            if (user.getRole().equals( role.toString() )){
+                long userId = user.getId();
+                Specification<ActorBean, PreparedStatement, Connection> specification =
+                        ActorUserIdSqlSpecificationFactory.getSpecification(role, userId);
+                Optional< List<ActorBean> > optionalActors = repository.find(specification);
+                if (optionalActors.isPresent()){
+                    ActorBean actor = optionalActors.get().get(0);
+                    actors.put(userId, actor);
+                }else{//FIXME logging
+                    iterator.remove();
+                }
+            }
+        }
+        request.setAttribute(RequestAttributesNameProvider.ACTOR_MAP_ATTRIBUTE, actors);
+        return true;
     }
 
     private boolean getProfile(HttpServletRequest request) throws RepositoryOperationException {

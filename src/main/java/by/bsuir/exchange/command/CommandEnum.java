@@ -6,6 +6,7 @@ public enum CommandEnum {
     REGISTER,
     UPDATE_PROFILE_CLIENT,
     UPDATE_PROFILE_COURIER,
+    GET_USERS,
     GET_PROFILE,
     GET_COURIERS,
     GET_OFFERS,

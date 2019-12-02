@@ -14,6 +14,7 @@ public class ConfigurationProvider{ //FIXME redirect
     public static final String ERROR_PAGE_PATH = "ERROR_PAGE_PATH";
     public static final String EDIT_PROFILE_PAGE_PATH = "EDIT_PROFILE_PAGE_PATH";
     public static final String OFFERS_PAGE_PATH = "OFFERS_PAGE_PATH";
+    public static final String ADMIN_PAGE_PATH = "ADMIN_PAGE_PATH";
 
     public static final String IMAGE_PATH = "IMAGE_PATH";
     public static final String IMAGE_SERVLET = "IMAGE_SERVLET";

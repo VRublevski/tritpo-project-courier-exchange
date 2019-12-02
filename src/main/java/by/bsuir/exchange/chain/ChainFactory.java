@@ -77,7 +77,7 @@ public class ChainFactory { //Load on servlet initialization
         CommandHandler chain;
         switch (command){
             case LOGIN:{
-                chain = permissionChecker.chain(sessionBranch).chain(actorBranch);
+                chain = permissionChecker.chain(sessionBranch);
                 break;
             }
             case LOGOUT: {
@@ -98,6 +98,10 @@ public class ChainFactory { //Load on servlet initialization
             }
             case SET_LOCALE:{
                 chain = sessionManager;
+                break;
+            }
+            case GET_USERS: {
+                chain = permissionChecker.chain(sessionManager).chain(clientManager).chain(courierManager);
                 break;
             }
             case GET_PROFILE: {  //FIXME check for permissions

@@ -36,4 +36,8 @@ public class Command {
     public boolean isRedirect() {
         return redirect;
     }
+
+    public CommandEnum getTag() {
+        return tag;
+    }
 }
