@@ -30,7 +30,7 @@ class Permission{
         return Objects.hash(permissions);
     }
 
-    public boolean granted(Permission other){
+    boolean granted(Permission other){
         boolean status = true;
         for (PermissionEnum permission : permissions){
             if (!other.permissions.contains(permission) ){ //FIXME nullptr
@@ -44,7 +44,7 @@ class Permission{
 }
 
 public class PermissionChecker {
-    private final static int N_COMMANDS = 15;
+    private final static int N_COMMANDS = 16;
     private final static int N_RESOURCES = 5;
     private final static int N_ROLES = 4;
 
@@ -64,6 +64,7 @@ public class PermissionChecker {
             addLogoutCommandCompetencies();
             addRegisterCommandCompetencies();
             addGetUsersCommandCompetencies();
+            addDeleteUserCommandCompetencies();
             addGetCourierCommandCompetencies();
             addGetOffersCommandCompetencies();
             addUpdateProfileClientCommandCompetencies();
@@ -76,6 +77,12 @@ public class PermissionChecker {
         }
 
         return instance;
+    }
+
+    private static void addDeleteUserCommandCompetencies() {
+        int i = CommandEnum.DELETE_USER.ordinal();
+        EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(UPDATE);
+        instance.commandCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(sessionPermissions);
     }
 
     private static void addGetUsersCommandCompetencies() {
@@ -150,7 +157,7 @@ public class PermissionChecker {
 
     private static void addAdminCompetencies(){
         int i = RoleEnum.ADMIN.ordinal();
-        EnumSet<PermissionEnum> userPermissions = EnumSet.of(READ, UPDATE, DELETE);
+        EnumSet<PermissionEnum> userPermissions = EnumSet.of(READ, UPDATE, DELETE); //FIXME DELETE
         instance.roleCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(userPermissions);
     }
 

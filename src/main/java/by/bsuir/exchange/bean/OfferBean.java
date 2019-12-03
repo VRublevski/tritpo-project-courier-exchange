@@ -5,15 +5,26 @@ public class OfferBean {
     private String transport;
     private double price;
     private long courierId;
+    private boolean archival;
 
     public OfferBean() {
     }
 
-    public OfferBean(long id, String transport, double price, long courierId) {
+
+    public OfferBean(long id, String transport, double price, long courierId, boolean archival) {
         this.id = id;
         this.transport = transport;
         this.price = price;
         this.courierId = courierId;
+        this.archival = archival;
+    }
+
+    public boolean getArchival() {
+        return archival;
+    }
+
+    public void setArchival(boolean archival) {
+        this.archival = archival;
     }
 
     public long getCourierId() {

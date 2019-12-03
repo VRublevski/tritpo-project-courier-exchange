@@ -42,7 +42,12 @@ public class OfferSqlRepository extends SqlRepository<OfferBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long courierId = resultSet.getLong(columnName);
 
-            OfferBean courier = new OfferBean(id, transport, price, courierId);
+            column = DataBaseAttributesProvider.ARCHIVAL;
+            columnName = DataBaseAttributesProvider.getColumnName(table, column);
+            boolean archival = resultSet.getBoolean(columnName);
+
+
+            OfferBean courier = new OfferBean(id, transport, price, courierId, archival);
             offers.add(courier);
         }
 
@@ -54,13 +59,14 @@ public class OfferSqlRepository extends SqlRepository<OfferBean> {
 
     @Override
     public void add(OfferBean bean) throws RepositoryOperationException {
-        String template = "INSERT INTO offers (price, transport, courier_id) VALUES (?, ?, ?)";
+        String template = "INSERT INTO offers (price, transport,  archival, courier_id) VALUES (?, ?, ?, ?)";
         try{
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
             statement.setDouble(1, bean.getPrice());
             statement.setString(2, bean.getTransport());
-            statement.setLong(3, bean.getCourierId());
+            statement.setBoolean(3, bean.getArchival());
+            statement.setLong(4, bean.getCourierId());
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0){
                 throw new RepositoryOperationException("Unable to perform operation");
@@ -77,13 +83,14 @@ public class OfferSqlRepository extends SqlRepository<OfferBean> {
 
     @Override
     public void update(OfferBean bean) throws RepositoryOperationException {
-        String template = "UPDATE offers SET price=?, transport=? WHERE id=?";
+        String template = "UPDATE offers SET price=?, transport=?, archival=? WHERE id=?";
         try{
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template);
             statement.setDouble(1, bean.getPrice());
             statement.setString(2, bean.getTransport());
-            statement.setLong(3, bean.getId());
+            statement.setBoolean(3, bean.getArchival());
+            statement.setLong(4, bean.getId());
             statement.executeUpdate();
             pool.releaseConnection(connection);
         } catch (PoolTimeoutException | SQLException | PoolOperationException e) {

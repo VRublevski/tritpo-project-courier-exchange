@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class OfferByCourierIdSpecification implements Specification<OfferBean, PreparedStatement, Connection> {
-    private static final String QUERY = "SELECT * FROM offers WHERE courier_id = ?";
+    private static final String QUERY = "SELECT * FROM offers WHERE courier_id = ? AND archival=0";
 
     private Connection connection;
     private long courierId;

@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class UserAllSpecification implements Specification<UserBean, PreparedStatement, Connection> {
-    private final static String LOGIN_QUERY = "SELECT * FROM users WHERE role <> 'ADMIN'";  //FIXME archive
+    private final static String LOGIN_QUERY = "SELECT * FROM users WHERE role <> 'ADMIN' AND archival=0";  //FIXME archive
 
     private Connection connection;
 

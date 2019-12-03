@@ -1,9 +1,12 @@
 package by.bsuir.exchange.manager;
 
+import by.bsuir.exchange.bean.ActorBean;
 import by.bsuir.exchange.bean.DeliveryBean;
 import by.bsuir.exchange.bean.OfferBean;
+import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
+import by.bsuir.exchange.entity.RoleEnum;
 import by.bsuir.exchange.manager.exception.ManagerInitializationException;
 import by.bsuir.exchange.manager.exception.ManagerOperationException;
 import by.bsuir.exchange.provider.RequestAttributesNameProvider;
@@ -36,12 +39,16 @@ public class OfferManager extends AbstractManager<OfferBean> implements CommandH
 
     @Override
     public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException {
-        HttpSession session = request.getSession();
-        long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
         boolean status;
         try{
             switch (command){
+                case DELETE_USER: {
+                    status = deleteUser(request);
+                    break;
+                }
                 case UPDATE_PROFILE_COURIER:{
+                    HttpSession session = request.getSession();
+                    long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
                     Specification<OfferBean, PreparedStatement, Connection> specification = new OfferByCourierIdSpecification(id);
                     Optional<List<OfferBean>> optionalOffers = repository.find(specification);
                     status = optionalOffers.isPresent()? update(request, optionalOffers.get().get(0)) : add(request, id);
@@ -65,6 +72,23 @@ public class OfferManager extends AbstractManager<OfferBean> implements CommandH
             throw new ManagerOperationException(e);
         }
         return status;
+    }
+
+    private boolean deleteUser(HttpServletRequest request) throws RepositoryOperationException {
+        ActorBean actor = (ActorBean) request.getAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE);
+        long id = actor.getId();
+        Specification<OfferBean, PreparedStatement, Connection> specification = new OfferByCourierIdSpecification(id);
+
+        Optional< List<OfferBean>> optionalOffers = repository.find(specification);
+        if (optionalOffers.isPresent()){
+            List<OfferBean> offers = optionalOffers.get();
+            for (OfferBean foundOffer : offers){
+                foundOffer = optionalOffers.get().get(0);
+                foundOffer.setArchival(true);
+                repository.update(foundOffer);
+            }
+        }
+        return true;
     }
 
     private boolean finishDelivery(HttpServletRequest request) throws RepositoryOperationException {

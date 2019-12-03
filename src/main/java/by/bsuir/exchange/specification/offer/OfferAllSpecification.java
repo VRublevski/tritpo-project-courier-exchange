@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class OfferAllSpecification implements Specification<OfferBean, PreparedStatement, Connection> {
-    private static final String QUERY = "SELECT * FROM offers";
+    private static final String QUERY = "SELECT * FROM offers AND archival=0";
     private Connection connection;
 
     @Override

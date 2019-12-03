@@ -49,6 +49,7 @@ public class ChainFactory { //Load on servlet initialization
     /*Transactional*/
     private static CommandHandler registerTransaction;
     private static CommandHandler finishDeliveryTransaction;
+    private static CommandHandler deleteUserTransactional;
 
     /*Validators*/
     private static CommandHandler userBeanValidator;
@@ -102,6 +103,10 @@ public class ChainFactory { //Load on servlet initialization
             }
             case GET_USERS: {
                 chain = permissionChecker.chain(sessionManager).chain(clientManager).chain(courierManager);
+                break;
+            }
+            case DELETE_USER: {
+                chain = deleteUserTransactional;
                 break;
             }
             case GET_PROFILE: {  //FIXME check for permissions
@@ -191,8 +196,9 @@ public class ChainFactory { //Load on servlet initialization
 
         isCourierRequest = (request, command) -> {
             UserBean user = (UserBean) request.getAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE);
-            String roleString = RoleEnum.COURIER.toString();
-            return user.getRole().equals(roleString.toLowerCase());
+            String courierRole = RoleEnum.COURIER.toString();
+            String actualRole = user.getRole().toUpperCase();
+            return courierRole.equals(actualRole);
         };
     }
 
@@ -238,12 +244,13 @@ public class ChainFactory { //Load on servlet initialization
             combination.closeManager();
             return status;
         };
-        CommandHandler branch = clientRegisterTransactional.branch(isCourierRequest, courierRegisterTransactional);
+        CommandHandler registerBranch = clientRegisterTransactional.branch(isCourierRequest, courierRegisterTransactional);
         registerTransaction = userBeanCreator
                             .chain(userBeanValidator)
                             .chain(actorBeanCreator)
                             .chain(actorBeanValidator)
-                            .chain(branch);
+                            .chain(registerBranch);
+
         CommandHandler deliveryTransaction = (request, command) -> {
             DeliveryManager deliveryManager = new DeliveryManager();
             ActorManager clientManager = new ActorManager(RoleEnum.CLIENT);
@@ -255,6 +262,38 @@ public class ChainFactory { //Load on servlet initialization
             return status;
         };
         finishDeliveryTransaction = deliveryBeanCreator.chain(offerManager).chain(deliveryTransaction);
+
+        CommandHandler clientDeleteTransactional = (request, command) -> {
+            HttpSessionManager userManager = new HttpSessionManager();
+            ActorManager clientManager = new ActorManager(RoleEnum.CLIENT);
+            DeliveryManager deliveryManager = new DeliveryManager();
+            ImageManager imageManager = new ImageManager();
+            AbstractManager<UserBean> userClientCombination = userManager.combine(clientManager);
+            AbstractManager<UserBean> deliveryCombination = userClientCombination.combine(deliveryManager);
+            AbstractManager<UserBean> fullCombination = deliveryCombination.combine(imageManager);
+            boolean status = fullCombination.handle(request, command);
+            fullCombination.closeManager();
+            return status;
+        };
+
+        CommandHandler courierDeleteTransactional = (request, command) -> {
+            HttpSessionManager userManager = new HttpSessionManager();
+            ActorManager clientManager = new ActorManager(RoleEnum.COURIER);
+            DeliveryManager deliveryManager = new DeliveryManager();
+            OfferManager offerManager = new OfferManager();
+            ImageManager imageManager = new ImageManager();
+            AbstractManager<UserBean> userClientCombination = userManager.combine(clientManager);
+            AbstractManager<UserBean> deliveryCombination = userClientCombination.combine(deliveryManager);
+            AbstractManager<UserBean> offerCombination = deliveryCombination.combine(offerManager);
+            AbstractManager<UserBean> fullCombination = offerCombination.combine(imageManager);
+            boolean status = fullCombination.handle(request, command);
+            fullCombination.closeManager();
+            return status;
+        };
+
+        CommandHandler deleteUserBranch = clientDeleteTransactional.branch(isCourierRequest, courierDeleteTransactional);
+
+        deleteUserTransactional = permissionChecker.chain(userBeanCreator).chain(deleteUserBranch);
     }
 
     private static void initBranches() {

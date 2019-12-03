@@ -53,19 +53,21 @@ public class DataBaseAttributesProvider {
         usersColumns.put(EMAIL, "email");
         usersColumns.put(PASSWORD, "password");
         usersColumns.put(ROLE, "role");
+        usersColumns.put(ARCHIVAL, "archival");
 
         clientColumns.put(ID, "id");
         clientColumns.put(NAME, "name");
         clientColumns.put(SURNAME, "surname");
         clientColumns.put(BALANCE, "balance");
         clientColumns.put(USER_ID, "user_id");
-
+        clientColumns.put(ARCHIVAL, "archival");
 
         courierColumns.put(ID, "id");
         courierColumns.put(NAME, "name");
         courierColumns.put(SURNAME, "surname");
         courierColumns.put(BALANCE, "balance");
         courierColumns.put(USER_ID, "user_id");
+        courierColumns.put(ARCHIVAL, "archival");
 
         deliveryColumns.put(ID, "id");
         deliveryColumns.put(CLIENT_ID, "clientId");
@@ -78,11 +80,13 @@ public class DataBaseAttributesProvider {
         offerColumns.put(PRICE, "price");
         offerColumns.put(TRANSPORT, "transport");
         offerColumns.put(COURIER_ID, "courier_id");
+        offerColumns.put(ARCHIVAL, "archival");
 
         imagesColumns.put(ID, "id");
         imagesColumns.put(ROLE, "role");
         imagesColumns.put(ROLE_ID, "role_id");
         imagesColumns.put(FILE_NAME, "file_name");
+        imagesColumns.put(ARCHIVAL, "archival");
     }
 
     public static String getProperty(String name){

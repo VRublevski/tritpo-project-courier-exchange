@@ -1,8 +1,6 @@
 package by.bsuir.exchange.repository.impl;
 
 import by.bsuir.exchange.bean.ActorBean;
-import by.bsuir.exchange.pool.GlobalConnectionPool;
-import by.bsuir.exchange.pool.exception.PoolInitializationException;
 import by.bsuir.exchange.pool.exception.PoolOperationException;
 import by.bsuir.exchange.pool.exception.PoolTimeoutException;
 import by.bsuir.exchange.provider.DataBaseAttributesProvider;
@@ -50,7 +48,11 @@ public class ActorSqlRepository extends SqlRepository<ActorBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             long user_id = resultSet.getLong(columnName);
 
-            ActorBean client = new ActorBean(id, name, surname, balance, user_id);
+            column = DataBaseAttributesProvider.ARCHIVAL;
+            columnName = DataBaseAttributesProvider.getColumnName(table, column);
+            boolean archival = resultSet.getBoolean(columnName);
+
+            ActorBean client = new ActorBean(id, name, surname, balance, user_id, archival);
             clients.add(client);
         }
         if (clients.size() != 0 ){
@@ -68,7 +70,8 @@ public class ActorSqlRepository extends SqlRepository<ActorBean> {
             statement.setString(1, client.getName());
             statement.setString(2, client.getSurname());
             statement.setDouble(3, client.getBalance());
-            statement.setLong(4, client.getUserId());
+            statement.setBoolean(4, client.getArchival());
+            statement.setLong(5, client.getUserId());
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0){
                 throw new RepositoryOperationException("Unable to perform operation");
@@ -92,7 +95,8 @@ public class ActorSqlRepository extends SqlRepository<ActorBean> {
             statement.setString(1, entity.getName());
             statement.setString(2, entity.getSurname());
             statement.setDouble(3, entity.getBalance());
-            statement.setLong(4, entity.getId());
+            statement.setBoolean(4, entity.getArchival());
+            statement.setLong(5, entity.getId());
             statement.executeUpdate();
             pool.releaseConnection(connection);
         }catch (PoolTimeoutException | SQLException | PoolOperationException e) {

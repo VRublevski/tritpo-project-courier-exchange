@@ -42,7 +42,11 @@ public class ImageSqlRepository extends SqlRepository<ImageBean> {
             columnName = DataBaseAttributesProvider.getColumnName(table, column);
             String fileName = resultSet.getString(columnName);
 
-            ImageBean image = new ImageBean(id, roleId, role, fileName);
+            column = DataBaseAttributesProvider.ARCHIVAL;
+            columnName = DataBaseAttributesProvider.getColumnName(table, column);
+            boolean archival = resultSet.getBoolean(columnName);
+
+            ImageBean image = new ImageBean(id, role, roleId, fileName, archival);
             images.add(image);
         }
         if (images.size() != 0 ){
@@ -53,7 +57,7 @@ public class ImageSqlRepository extends SqlRepository<ImageBean> {
 
     @Override
     public void add(ImageBean entity) throws RepositoryOperationException {
-        String template = "INSERT INTO images (role, role_id, file_name) VALUES (?, ?, ?)";
+        String template = "INSERT INTO images (role, role_id, file_name, archival) VALUES (?, ?, ?, ?)";
         try{
             GlobalConnectionPool pool = GlobalConnectionPool.getInstance();
             Connection connection = pool.getConnection();
@@ -61,6 +65,7 @@ public class ImageSqlRepository extends SqlRepository<ImageBean> {
             statement.setString(1, entity.getRole().toUpperCase());
             statement.setLong(2, entity.getRoleId());
             statement.setString(3, entity.getFileName());
+            statement.setBoolean(4, entity.getArchival());
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0){
                 throw new RepositoryOperationException("Unable to perform operation");
@@ -77,14 +82,15 @@ public class ImageSqlRepository extends SqlRepository<ImageBean> {
 
     @Override
     public void update(ImageBean entity) throws RepositoryOperationException {
-        String template = "UPDATE images SET file_name=? WHERE role = ? AND role_id = ?";
+        String template = "UPDATE images SET file_name=?, archival=? WHERE role = ? AND role_id = ?";
         try{
             GlobalConnectionPool pool = GlobalConnectionPool.getInstance();
             Connection connection = pool.getConnection();
             PreparedStatement statement = connection.prepareStatement(template);
             statement.setString(1, entity.getFileName());
-            statement.setString(2, entity.getRole());
-            statement.setLong(3, entity.getRoleId());
+            statement.setBoolean(2, entity.getArchival());
+            statement.setString(3, entity.getRole());
+            statement.setLong(4, entity.getRoleId());
             statement.executeUpdate();
             pool.releaseConnection(connection);
         } catch (PoolInitializationException | PoolTimeoutException | SQLException e) {

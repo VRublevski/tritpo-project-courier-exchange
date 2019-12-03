@@ -3,6 +3,7 @@ package by.bsuir.exchange.manager;
 import by.bsuir.exchange.bean.ActorBean;
 import by.bsuir.exchange.bean.DeliveryBean;
 import by.bsuir.exchange.bean.OfferBean;
+import by.bsuir.exchange.bean.UserBean;
 import by.bsuir.exchange.chain.CommandHandler;
 import by.bsuir.exchange.command.CommandEnum;
 import by.bsuir.exchange.entity.RoleEnum;
@@ -42,6 +43,10 @@ public class DeliveryManager extends AbstractManager<DeliveryBean> implements Co
         boolean status;
         try{
             switch (command){
+                case DELETE_USER: {
+                    status = deleteUser(request);
+                    break;
+                }
                 case REQUEST_DELIVERY: {
                     status = requestDelivery(request);
                     break;
@@ -63,6 +68,27 @@ public class DeliveryManager extends AbstractManager<DeliveryBean> implements Co
         }
 
         return status;
+    }
+
+    private boolean deleteUser(HttpServletRequest request) throws RepositoryOperationException {
+        UserBean user = (UserBean) request.getAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE);
+        String role = user.getRole();
+        String courierRole = RoleEnum.COURIER.toString();
+        ActorBean actor = (ActorBean) request.getAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE);
+        long id = actor.getId();
+        Specification<DeliveryBean, PreparedStatement, Connection> specification = courierRole.equals(role)
+                                                                                ? new DeliveryByCourierIdSpecification(id)
+                                                                                : new DeliveryByClientIdSpecification(id);
+        Optional< List<DeliveryBean>> optionalDeliveries = repository.find(specification);
+        if (optionalDeliveries.isPresent()){
+            List<DeliveryBean> deliveries = optionalDeliveries.get();
+            for (DeliveryBean foundDelivery : deliveries){
+                foundDelivery = optionalDeliveries.get().get(0);
+                foundDelivery.setArchival(true);
+                repository.update(foundDelivery);
+            }
+        }
+        return true;
     }
 
     private boolean getDeliveries(HttpServletRequest request) throws RepositoryOperationException {

@@ -15,6 +15,7 @@ import by.bsuir.exchange.repository.exception.RepositoryInitializationException;
 import by.bsuir.exchange.repository.exception.RepositoryOperationException;
 import by.bsuir.exchange.repository.factory.ActorSqlRepositoryFactory;
 import by.bsuir.exchange.specification.Specification;
+import by.bsuir.exchange.specification.actor.ActorByUserIdSpecification;
 import by.bsuir.exchange.specification.actor.factory.ActorIdSqlSpecificationFactory;
 import by.bsuir.exchange.specification.actor.factory.ActorUserIdSqlSpecificationFactory;
 
@@ -55,6 +56,10 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
                     status = getUsers(request);
                     break;
                 }
+                case DELETE_USER: {
+                    status = deleteUser(request);
+                    break;
+                }
                 case GET_PROFILE: {
                     status = getProfile(request);
                     break;
@@ -88,6 +93,24 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
             throw new ManagerOperationException(e);
         }
         return status;
+    }
+
+    private boolean deleteUser(HttpServletRequest request) throws RepositoryOperationException {
+        UserBean user = (UserBean) request.getAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE);
+        Specification<ActorBean, PreparedStatement, Connection> specification =
+                ActorUserIdSqlSpecificationFactory.getSpecification(role, user.getId());
+        Optional< List<ActorBean> > optionalActors = repository.find(specification);
+        boolean status;
+        if (optionalActors.isPresent()){
+            ActorBean foundActor = optionalActors.get().get(0);
+            foundActor.setArchival(true);
+            repository.update(foundActor);
+            request.setAttribute(RequestAttributesNameProvider.ACTOR_ATTRIBUTE, foundActor);
+            status = true;
+        }else{
+            status = false;
+        }
+        return  status;
     }
 
     private boolean getUsers(HttpServletRequest request) throws RepositoryOperationException {

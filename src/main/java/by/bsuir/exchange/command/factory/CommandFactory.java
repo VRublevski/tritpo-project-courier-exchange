@@ -17,7 +17,7 @@ import static by.bsuir.exchange.provider.ConfigurationProvider.*;
 import static by.bsuir.exchange.provider.PageAttributesNameProvider.COMMAND;
 
 public class CommandFactory {
-    private static final int N_COMMANDS = 14;
+    private static final int N_COMMANDS = 16;
 
     private static Map<String, String> pageConstants;
 
@@ -72,6 +72,9 @@ public class CommandFactory {
 
         successPages[CommandEnum.GET_USERS.ordinal()] = ConfigurationProvider.getProperty(ADMIN_PAGE_PATH);
         failurePages[CommandEnum.GET_USERS.ordinal()] = ConfigurationProvider.getProperty(ADMIN_PAGE_PATH);
+
+        successPages[CommandEnum.DELETE_USER.ordinal()] = "/controller?command=get_users";
+        failurePages[CommandEnum.DELETE_USER.ordinal()] = "/controller?command=get_users";
 
     }
 

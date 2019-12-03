@@ -7,8 +7,8 @@ import by.bsuir.exchange.repository.impl.ActorSqlRepository;
 import by.bsuir.exchange.repository.impl.SqlRepository;
 
 public class ActorSqlRepositoryFactory {
-    private static final String updateTemplate = "UPDATE %s SET name=?, surname=?, balance=? WHERE id=?";
-    private static final String insertTemplate = "INSERT INTO %s (name, surname, balance, user_id) VALUES (?, ?, ?, ?)";
+    private static final String updateTemplate = "UPDATE %s SET name=?, surname=?, balance=?, archival=? WHERE id=?";
+    private static final String insertTemplate = "INSERT INTO %s (name, surname, balance, archival, user_id) VALUES (?, ?, ?, ?, ?)";
 
     public static SqlRepository<ActorBean> getRepository(RoleEnum role) throws RepositoryInitializationException {
         String roleString = role.toString().toLowerCase();

@@ -14,6 +14,7 @@ import by.bsuir.exchange.repository.impl.UserSqlRepository;
 import by.bsuir.exchange.specification.Specification;
 import by.bsuir.exchange.specification.user.UserAllSpecification;
 import by.bsuir.exchange.specification.user.UserByEmailSqlSpecification;
+import by.bsuir.exchange.specification.user.UserByIdSpecification;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -40,6 +41,10 @@ public class HttpSessionManager extends AbstractManager<UserBean> implements Com
             switch (command) {
                 case GET_USERS: {
                     status = getUsers(request);
+                    break;
+                }
+                case DELETE_USER: {
+                    status = deleteUser(request);
                     break;
                 }
                 case LOGIN: {
@@ -72,6 +77,23 @@ public class HttpSessionManager extends AbstractManager<UserBean> implements Com
             throw new ManagerOperationException(e);
         }
 
+        return status;
+    }
+
+    private boolean deleteUser(HttpServletRequest request) throws RepositoryOperationException {
+        UserBean user = (UserBean) request.getAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE);
+        long id = user.getId();
+        Specification<UserBean, PreparedStatement, Connection> specification = new UserByIdSpecification(id);
+        Optional < List< UserBean> > optionalUsers = repository.find(specification);
+        boolean status;
+        if (optionalUsers.isPresent()){
+            UserBean foundUser = optionalUsers.get().get(0);
+            foundUser.setArchival(true);
+            repository.update(foundUser);
+            status = true;
+        }else{
+            status = false;
+        }
         return status;
     }
 

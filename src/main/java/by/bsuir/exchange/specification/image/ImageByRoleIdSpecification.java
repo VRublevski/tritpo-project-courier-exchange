@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class ImageByRoleIdSpecification implements Specification<ImageBean, PreparedStatement, Connection> {
-    private final static String QUERY = "SELECT * FROM images WHERE role = ? AND role_id = ?";
+    private final static String QUERY = "SELECT * FROM images WHERE role = ? AND role_id = ? AND archival=0";
 
     private Connection connection;
     private String role;
@@ -20,7 +20,7 @@ public class ImageByRoleIdSpecification implements Specification<ImageBean, Prep
 
     @Override
     public boolean specify(ImageBean entity) {
-        return entity.getRole() == role && entity.getRoleId() == roleId;
+        return role.equals(entity.getRole()) && entity.getRoleId() == roleId;
     }
 
     @Override

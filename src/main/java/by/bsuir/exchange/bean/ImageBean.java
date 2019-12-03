@@ -5,15 +5,26 @@ public class ImageBean implements Markable{
     private String role;
     private long roleId;
     private String fileName;
+    private boolean archival;
 
-    public ImageBean(long id, long roleId, String role, String fileName) {
+    public ImageBean(long id, String role, long roleId, String fileName, boolean archival) {
         this.id = id;
-        this.roleId = roleId;
         this.role = role;
+        this.roleId = roleId;
         this.fileName = fileName;
+        this.archival = archival;
     }
 
+
     public ImageBean() {
+    }
+
+    public boolean getArchival() {
+        return archival;
+    }
+
+    public void setArchival(boolean archival) {
+        this.archival = archival;
     }
 
     public long getId() {

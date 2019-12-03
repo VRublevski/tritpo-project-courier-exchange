@@ -9,7 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class ActorIdSqlSpecificationFactory {
-    private static final String QUERY = "SELECT * FROM %s WHERE id = ?";
+    private static final String QUERY = "SELECT * FROM %s WHERE id = ? AND archival=0";
 
     public static Specification<ActorBean, PreparedStatement, Connection> getSpecification(RoleEnum role, long id) {
         String roleString = role.toString().toLowerCase();

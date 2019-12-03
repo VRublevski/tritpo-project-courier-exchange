@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class UserByEmailSqlSpecification implements Specification<UserBean, PreparedStatement, Connection> {
-    private final static String LOGIN_QUERY = "SELECT * FROM users WHERE email = ?";
+    private final static String LOGIN_QUERY = "SELECT * FROM users WHERE email = ? AND archival=0";
 
     private String email;
     private Connection connection;
