@@ -78,7 +78,8 @@ public class ChainFactory { //Load on servlet initialization
         CommandHandler chain;
         switch (command){
             case LOGIN:{
-                chain = permissionChecker.chain(sessionBranch);
+                CommandHandler actorBranch = clientManager.branch(isCourierSession, courierManager);
+                chain = permissionChecker.chain(sessionBranch).chain(actorBranch);
                 break;
             }
             case LOGOUT: {

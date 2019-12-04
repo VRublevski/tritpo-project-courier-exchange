@@ -217,9 +217,12 @@ public class ActorManager extends AbstractManager<ActorBean> implements CommandH
     }
 
     private boolean login(HttpServletRequest request) throws RepositoryOperationException {
-        boolean status = false;
         UserBean user = (UserBean) request.getAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE);
         RoleEnum role = RoleEnum.valueOf(user.getRole());
+        if (role == RoleEnum.ADMIN){
+            return true;
+        }
+        boolean status = false;
         long userId = user.getId();
         Specification<ActorBean, PreparedStatement, Connection> specification = ActorUserIdSqlSpecificationFactory.getSpecification(role, userId);
         Optional<List<ActorBean> > clientsOptional = repository.find(specification);
