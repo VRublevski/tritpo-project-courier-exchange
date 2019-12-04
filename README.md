@@ -8,3 +8,5 @@
 [Software Requirements Specification](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Documents/SRS.md)
 
 [Diagrams](https://github.com/VRublevski/tritpo-project-courier-exchange/blob/master/Documents/Diagrams.md)
+
+[Test plan](https://github.com/VRublevski/tritpo-project-courier-exchange/issues/2)
