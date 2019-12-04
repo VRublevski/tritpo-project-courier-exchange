@@ -159,6 +159,8 @@ public class PermissionChecker {
         int i = RoleEnum.ADMIN.ordinal();
         EnumSet<PermissionEnum> userPermissions = EnumSet.of(READ, UPDATE, DELETE); //FIXME DELETE
         instance.roleCompetencies[i][ResourceEnum.USER.ordinal()] = new Permission(userPermissions);
+        EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(DELETE);
+        instance.roleCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
     }
 
     private static void addCourierCompetencies() {

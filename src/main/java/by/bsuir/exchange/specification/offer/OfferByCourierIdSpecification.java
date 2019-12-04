@@ -5,7 +5,7 @@ import by.bsuir.exchange.specification.Specification;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-
+    //FIXME add coherency between specifications construction
 public class OfferByCourierIdSpecification implements Specification<OfferBean, PreparedStatement, Connection> {
     private static final String QUERY = "SELECT * FROM offers WHERE courier_id = ? AND archival=0";
 
