@@ -39,8 +39,10 @@
           <div class="card">
             <!--Card image-->
             <div class="view overlay">
-              <img src="<c:url value="/images?role_id=${elem.id}&role=${pageScope.role}" />" class="card-img-top"
-                   alt="courier">
+              <div class="embed-responsive embed-responsive-4by3">
+                <img src="<c:url value="/images?role_id=${elem.id}&role=${pageScope.role}" />" class="card-img-top embed-responsive-item"
+                     alt="courier">
+              </div>
               <a href="#">
                 <div class="mask rgba-white-slight"></div>
               </a>
