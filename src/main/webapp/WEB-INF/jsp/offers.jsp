@@ -40,7 +40,9 @@
               <!--Text-->
               <p class="card-text"><span>Price: ${elem.price}</span></p>
               <p class="card-text"><span>Transport: ${elem.transport}</span></p>
-              <a href="<c:url value="/controller?command=request_delivery&courierId=${elem.courierId}&clientId=${sessionScope.id}"/>" class="btn btn-indigo">Request delivery</a>
+              <c:if test="${sessionScope.role == 'CLIENT'}">
+                <a href="<c:url value="/controller?command=request_delivery&courierId=${elem.courierId}&clientId=${sessionScope.id}"/>" class="btn btn-indigo">Request delivery</a>
+              </c:if>
             </div>
           </div>
           <!--/.Card-->

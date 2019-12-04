@@ -122,7 +122,15 @@ public class OfferManager extends AbstractManager<OfferBean> implements CommandH
     }
 
     private boolean getOffers(HttpServletRequest request) throws RepositoryOperationException {
-        Specification<OfferBean, PreparedStatement, Connection> specification = new OfferAllSpecification();
+        HttpSession session = request.getSession();
+        RoleEnum role = (RoleEnum) session.getAttribute(SessionAttributesNameProvider.ROLE);
+        Specification<OfferBean, PreparedStatement, Connection> specification;
+        if (role == RoleEnum.COURIER){
+            long id = (long) session.getAttribute(SessionAttributesNameProvider.ID);
+            specification = new OfferByCourierIdSpecification(id);
+        }else{
+            specification = new OfferAllSpecification();
+        }
         Optional< List<OfferBean> > optionalOffers = repository.find(specification);
         List<OfferBean> result = optionalOffers.orElse(Collections.emptyList());
         request.setAttribute(RequestAttributesNameProvider.OFFER_LIST_ATTRIBUTE, result);

@@ -127,8 +127,8 @@ public class PermissionChecker {
 
     private static void addGetOffersCommandCompetencies(){
         int i = CommandEnum.GET_OFFERS.ordinal();
-        EnumSet<PermissionEnum> courierPermissions = EnumSet.of(READ);
-        instance.commandCompetencies[i][ResourceEnum.OFFER.ordinal()] = new Permission(courierPermissions);
+        EnumSet<PermissionEnum> offerPermissions = EnumSet.of(READ);
+        instance.commandCompetencies[i][ResourceEnum.OFFER.ordinal()] = new Permission(offerPermissions);
     }
 
     private static void addUpdateProfileClientCommandCompetencies(){
@@ -167,6 +167,8 @@ public class PermissionChecker {
         instance.roleCompetencies[i][ResourceEnum.COURIER.ordinal()] = new Permission(courierPermissions);
         EnumSet<PermissionEnum> sessionPermissions = EnumSet.of(DELETE);
         instance.roleCompetencies[i][ResourceEnum.HTTP_SESSION.ordinal()] = new Permission(sessionPermissions);
+        EnumSet<PermissionEnum> offerPermissions = EnumSet.of(CREATE, READ, UPDATE);
+        instance.roleCompetencies[i][ResourceEnum.OFFER.ordinal()] = new Permission(offerPermissions);
     }
 
     public boolean checkPermission(RoleEnum role, CommandEnum command){
