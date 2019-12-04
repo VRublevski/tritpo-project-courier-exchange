@@ -18,12 +18,14 @@
     <c:set var="role" value="CLIENT" scope="page" />
     <c:set var="command" value="command=finish_delivery&courierId=${sessionScope.id}" />
     <c:set var="otherId" value="clientId" />
+    <c:set var="meFinished" value="courierFinished" />
   </c:when>
   <c:otherwise>
     <c:set var="list" value="${requestScope.courier_list}" scope="page" />
     <c:set var="role" value="COURIER" scope="page" />
-    <c:set var="command" value="command=finish_delivery&clientId=${sessionScope.id}" />
-    <c:set var="otherId" value="courierId" />
+    <c:set var="command" value="command=finish_delivery&clientId=${sessionScope.id}" scope="page" />
+    <c:set var="otherId" value="courierId" scope="page"/>
+    <c:set var="meFinished" value="clientFinished" scope="page" />
   </c:otherwise>
 </c:choose>
 <body>
@@ -34,6 +36,23 @@
     <div class="row">
       <!--Grid column-->
       <c:forEach var="elem" items="${pageScope.list}" varStatus="status">
+        <c:choose>
+          <c:when test="${pageScope.role == 'CLIENT'}" >
+            <c:set var="check" value="${requestScope.delivery_list[status.index].courierFinished}" scope="page" />
+          </c:when>
+          <c:otherwise>
+            <c:set var="check" value="${requestScope.delivery_list[status.index].clientFinished}" scope="page" />
+          </c:otherwise>
+        </c:choose>
+        <c:choose>
+          <c:when test="${check}" >
+            <c:set var="btnAttr" value="disabled" scope="page" />
+          </c:when>
+          <c:otherwise>
+            <c:set var="btnAttr" value="" scope="page" />
+          </c:otherwise>
+        </c:choose>
+
         <div class="col-lg-4 col-md-6 mb-4">
           <!--Card-->
           <div class="card">
@@ -43,7 +62,7 @@
                 <img src="<c:url value="/images?role_id=${elem.id}&role=${pageScope.role}" />" class="card-img-top embed-responsive-item"
                      alt="courier">
               </div>
-              <a href="#">
+              <a href="${check}">
                 <div class="mask rgba-white-slight"></div>
               </a>
             </div>
@@ -52,7 +71,7 @@
               <!--Title-->
               <h4 class="card-title"><span>${elem.name}</span> <span>${elem.surname}</span></h4>
               <!--Text-->
-              <a href="<c:url value="/controller?${pageScope.command}&${pageScope.otherId}=${elem.id}"/>" class="btn btn-indigo">Finish delivery</a>
+              <a href="<c:url value="/controller?${pageScope.command}&${pageScope.otherId}=${elem.id}"/>" class="btn btn-indigo ${btnAttr}">Finish delivery</a>
             </div>
           </div>
           <!--/.Card-->
