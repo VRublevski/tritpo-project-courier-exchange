@@ -66,6 +66,12 @@
               <!-- Sign up button -->
               <button class="btn btn-info my-4 btn-block" type="submit">Sign up</button>
 
+              <c:if test="${not empty requestScope.error_string}">
+                  <div class="alert alert-danger alert-dismissible fade show">
+                        ${requestScope.error_string}
+                  </div>
+              </c:if>
+
               <p>Already have an account?
                   <a href="<c:url value="/jsp/login.jsp"/> ">Sign in</a>
               </p>

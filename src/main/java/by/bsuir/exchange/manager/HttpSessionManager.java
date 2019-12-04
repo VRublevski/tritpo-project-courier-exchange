@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class HttpSessionManager extends AbstractManager<UserBean> implements CommandHandler {
+    private static final String DUPLICATE_EMAIL_ERROR = "User with the same email already exists.";
+    private static final String INVALID_CREDENTIALS_ERROR = "Invalid email or password.";
 
     public HttpSessionManager() throws ManagerInitializationException {
         try{
@@ -109,6 +111,7 @@ public class HttpSessionManager extends AbstractManager<UserBean> implements Com
         Specification<UserBean, PreparedStatement, Connection> userEmailSpecification = new UserByEmailSqlSpecification(userRequest);
         Optional<List<UserBean>> userOption = repository.find(userEmailSpecification);
         if (!userOption.isPresent()){
+            request.setAttribute(RequestAttributesNameProvider.ERROR_STRING, INVALID_CREDENTIALS_ERROR);
             return false;
         }
         UserBean userFound = userOption.get().get(0);
@@ -121,11 +124,18 @@ public class HttpSessionManager extends AbstractManager<UserBean> implements Com
             request.setAttribute(RequestAttributesNameProvider.USER_ATTRIBUTE, userFound);
             return true;
         }else{
+            request.setAttribute(RequestAttributesNameProvider.ERROR_STRING, INVALID_CREDENTIALS_ERROR);
             return false;
         }
     }
 
     private boolean register(HttpServletRequest request, UserBean user) throws RepositoryOperationException {
+        Specification<UserBean, PreparedStatement, Connection> specification = new UserByEmailSqlSpecification(user);
+        Optional<List<UserBean>> optionalUsers = repository.find(specification);
+        if (optionalUsers.isPresent()){
+            request.setAttribute(RequestAttributesNameProvider.ERROR_STRING, DUPLICATE_EMAIL_ERROR);
+            return false;
+        }
         repository.add(user);
         HttpSession session = request.getSession();
         RoleEnum role = RoleEnum.valueOf(user.getRole().toUpperCase());

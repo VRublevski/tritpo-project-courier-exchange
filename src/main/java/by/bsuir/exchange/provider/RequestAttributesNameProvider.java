@@ -12,6 +12,7 @@ public class RequestAttributesNameProvider {
     public static final String USER_LIST = "user_list";
     public static final String COURIER_LIST = "courier_list";
     public static final String CLIENT_LIST = "client_list";
+    public static final String ERROR_STRING = "error_string";
     public static final String COURIER_BALANCE = "courier_balance";
     public static final String CLIENT_BALANCE = "client_balance";
     public static final String PAGE = "page";

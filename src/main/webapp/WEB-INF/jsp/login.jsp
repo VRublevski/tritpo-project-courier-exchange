@@ -33,6 +33,11 @@
                   <!-- Sign in button -->
                 <button class="btn btn-info btn-block my-4" type="submit">Sign in</button>
 
+                <c:if test="${not empty requestScope.error_string}">
+                    <div class="alert alert-danger alert-dismissible fade show">
+                            ${requestScope.error_string}
+                    </div>
+                </c:if>
                   <!-- Register -->
                 <p>Not a member?
                     <a href="<c:url value="/jsp/register.jsp" /> ">Register</a>
