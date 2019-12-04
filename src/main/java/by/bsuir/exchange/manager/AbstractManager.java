@@ -15,7 +15,7 @@ public abstract class AbstractManager<T> implements CommandHandler {
     public abstract boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException;
 
     public <T2> AbstractManager<T> combine(AbstractManager<T2> other) throws ManagerOperationException {
-        SqlRepository<T> packed = null;
+        SqlRepository<T> packed;
         try {
             packed = repository.pack(other.repository);
         } catch (RepositoryInitializationException e) {
@@ -24,9 +24,7 @@ public abstract class AbstractManager<T> implements CommandHandler {
         AbstractManager<T> manager = new AbstractManager<>() {
             @Override
             public boolean handle(HttpServletRequest request, CommandEnum command) throws ManagerOperationException {
-                boolean status = AbstractManager.this.handle(request, command);
-                status &= other.handle(request, command);
-                return status;
+                return AbstractManager.this.handle(request, command) && other.handle(request, command);
             }
 
             @Deprecated
